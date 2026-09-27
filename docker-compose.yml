@@ -19,11 +19,9 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    command: ["sh", "-c", "npx prisma migrate deploy && node dist/seed/seed.js"]
+    command: ["sh", "-c", "echo 'seed: placeholder, will be implemented next batch'"]
     environment:
-      DATABASE_URL: postgres://dogfood:dogfood@db:5432/dogfood
       NODE_ENV: production
-      SEED_ON_START: "true"
     depends_on:
       db:
         condition: service_healthy
