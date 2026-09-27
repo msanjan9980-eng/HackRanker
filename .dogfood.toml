@@ -1,0 +1,20 @@
+[portal]
+base_url = "http://localhost:8080"
+
+[tiers]
+claimed = ["T1", "T2"]
+pitch = "A modern self-hostable hackathon platform with backend-enforced role isolation and documented cross-judge normalization."
+
+[auth]
+# Replace these after docker compose logs seed prints the real tokens.
+organizer   = "Cookie: df_sid=REPLACE_AFTER_SEED"
+judge_a     = "Cookie: df_sid=REPLACE_AFTER_SEED"
+judge_b     = "Cookie: df_sid=REPLACE_AFTER_SEED"
+participant = "Cookie: df_sid=REPLACE_AFTER_SEED"
+
+[routes]
+gallery      = "/api/v1/events/evt_01/gallery"
+submit       = "/api/v1/events/evt_01/projects"
+judge_scores = "/api/v1/me/scores"
+peer_scores  = "/api/v1/judges/jdg_01/scores"
+csv_export   = "/api/v1/events/evt_01/export.csv"
