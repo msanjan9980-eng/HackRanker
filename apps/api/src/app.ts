@@ -1,21 +1,26 @@
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import helmet from "@fastify/helmet";
+import { healthRoutes } from "./routes/health.js";
+import { galleryRoutes } from "./routes/gallery.js";
+import { submitRoutes } from "./routes/submit.js";
+import { scoreRoutes } from "./routes/scores.js";
+import { exportRoutes } from "./routes/export.js";
 
 export async function buildApp() {
   const app = Fastify({
-    logger: { level: process.env.NODE_ENV === "production" ? "info" : "debug" },
+    logger: { level: process.env.NODE_ENV === "production" ? "warn" : "info" },
     trustProxy: true,
   });
 
   await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cookie, { secret: process.env.SESSION_SECRET ?? "dev-only-secret" });
 
-  // Internal (Docker healthcheck hits this directly on port 3000)
-  app.get("/healthz", async () => ({ status: "ok" }));
-
-  // External (nginx proxies /api/* → api:3000/api/*, path preserved)
-  app.get("/api/healthz", async () => ({ status: "ok" }));
+  await app.register(healthRoutes);
+  await app.register(galleryRoutes);
+  await app.register(submitRoutes);
+  await app.register(scoreRoutes);
+  await app.register(exportRoutes);
 
   return app;
 }
