@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Judge view &mdash; Dogfood 2026</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: rgba(20, 27, 51, 0.72);
+        --panel-border: rgba(122, 141, 198, 0.18);
+        --fg: #eef2ff;
+        --muted: #93a1c7;
+        --line: rgba(122, 141, 198, 0.16);
+        --accent: #7aa2ff;
+        --accent-2: #8ef2c9;
+        --danger: #ff8d9b;
+        --radius: 14px;
+        --transition: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--fg);
+        background:
+          radial-gradient(1200px 600px at 20% -10%, rgba(122, 162, 255, 0.16), transparent 60%),
+          radial-gradient(900px 500px at 90% 0%, rgba(142, 242, 201, 0.12), transparent 55%),
+          var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      .shell { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
+      header {
+        padding: 2.5rem 0 1.25rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+      }
+      .brand a { color: var(--muted); text-decoration: none; }
+      .brand a:hover { color: var(--accent); }
+      h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 2.5vw + 0.8rem, 2.25rem);
+        letter-spacing: -0.025em;
+        font-weight: 650;
+        background: linear-gradient(120deg, #eef2ff 20%, #8ef2c9 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .subtitle { color: var(--muted); margin: 0.4rem 0 0; font-size: 0.95rem; }
+      main { padding: 1.5rem 0 3rem; }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(8px);
+      }
+      .kpis {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .kpi {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.6rem 0.9rem;
+        background: rgba(11, 16, 32, 0.5);
+        border: 1px solid var(--panel-border);
+        border-radius: 10px;
+        min-width: 9rem;
+      }
+      .kpi .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+      .kpi .value { font-size: 1.4rem; font-weight: 600; }
+      .kpi .value.ok { color: var(--accent-2); }
+      .kpi .value.danger { color: var(--danger); }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th, td {
+        padding: 0.55rem 0.65rem;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+      }
+      th { color: var(--muted); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
+      tr:last-child td { border-bottom: 0; }
+      tr { transition: background var(--transition); }
+      tbody tr:hover { background: rgba(122, 162, 255, 0.06); }
+      .num { text-align: right; font-variant-numeric: tabular-nums; }
+      .score {
+        display: inline-block;
+        padding: 0.1rem 0.45rem;
+        border-radius: 6px;
+        background: rgba(122, 162, 255, 0.14);
+        border: 1px solid rgba(122, 162, 255, 0.3);
+        font-variant-numeric: tabular-nums;
+      }
+      .status {
+        padding: 0.9rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--panel-border);
+        background: var(--panel);
+        font-size: 0.92rem;
+      }
+      .status.error { border-color: rgba(255, 141, 155, 0.4); color: var(--danger); }
+      .status.denied { border-color: rgba(255, 141, 155, 0.4); color: var(--danger); }
+      .spinner {
+        display: inline-block; vertical-align: middle;
+        width: 14px; height: 14px;
+        border: 2px solid rgba(122, 162, 255, 0.25);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 0.5rem;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      footer {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 1.25rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        border-top: 1px solid var(--line);
+      }
+      footer a { color: var(--accent); text-decoration: none; }
+      footer a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell">
+        <div class="brand"><a href="/">dogfood 2026</a> &middot; judge view</div>
+        <h1 id="title">Your scores</h1>
+        <p class="subtitle">Signed in via the <code style="background: rgba(122,162,255,0.1); padding: 0.05rem 0.35rem; border-radius: 5px;">df_sid</code> cookie. Only your own scores are visible.</p>
+      </div>
+    </header>
+
+    <main class="shell">
+      <div id="status" class="status"><span class="spinner"></span>Loading your scores&hellip;</div>
+      <div id="content" style="display:none;">
+        <div class="panel kpis">
+          <div class="kpi"><span class="label">Your judge id</span><span class="value" id="judge-id">&mdash;</span></div>
+          <div class="kpi"><span class="label">Scores submitted</span><span class="value" id="count">&mdash;</span></div>
+          <div class="kpi"><span class="label">Average</span><span class="value" id="avg">&mdash;</span></div>
+        </div>
+        <div class="panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th class="num">Functionality</th>
+                <th class="num">Quality</th>
+                <th class="num">Innovation</th>
+                <th class="num">Total</th>
+                <th>Comment</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="shell" style="padding: 0;">
+        <a href="/">Gallery</a> &middot;
+        <a href="/submit.html">Submit a project</a> &middot;
+        API: <code>/api/v1/me/scores</code>
+      </div>
+    </footer>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const contentEl = document.getElementById("content");
+      const rowsEl = document.getElementById("rows");
+
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+
+      function deny(msg) {
+        statusEl.classList.add("denied");
+        statusEl.innerHTML = esc(msg) + "<br><br>To see a judge view, set the <code>df_sid</code> cookie to a judge session. The seed container prints one on startup.";
+      }
+
+      async function load() {
+        try {
+          const res = await fetch("/api/v1/me/scores", { headers: { Accept: "application/json" } });
+          if (res.status === 401) { deny("Not signed in."); return; }
+          if (res.status === 403) { deny("You are signed in, but not as a judge for this event."); return; }
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          const scores = Array.isArray(data.scores) ? data.scores : [];
+
+          document.getElementById("judge-id").textContent = data.judgeUserId ?? "—";
+          document.getElementById("count").textContent = String(data.count ?? scores.length);
+
+          if (scores.length) {
+            const avg = scores.reduce((a, s) => a + (s.functionality + s.quality + s.innovation) / 3, 0) / scores.length;
+            document.getElementById("avg").textContent = avg.toFixed(2);
+            document.getElementById("avg").classList.add("ok");
+          } else {
+            document.getElementById("avg").textContent = "—";
+          }
+
+          rowsEl.innerHTML = scores.map((s) => {
+            const total = s.functionality + s.quality + s.innovation;
+            return "<tr>" +
+              "<td>" + esc(s.projectId) + "</td>" +
+              '<td class="num"><span class="score">' + s.functionality + "</span></td>" +
+              '<td class="num"><span class="score">' + s.quality + "</span></td>" +
+              '<td class="num"><span class="score">' + s.innovation + "</span></td>" +
+              '<td class="num"><strong>' + total + "</strong></td>" +
+              "<td>" + esc(s.comment ?? "") + "</td>" +
+            "</tr>";
+          }).join("");
+
+          statusEl.style.display = "none";
+          contentEl.style.display = "block";
+        } catch (err) {
+          statusEl.classList.add("error");
+          statusEl.textContent = "Could not load scores: " + err.message;
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>
