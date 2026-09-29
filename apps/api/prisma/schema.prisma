@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -7,156 +8,155 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum GlobalRole { USER ADMIN }
-enum EventStatus { DRAFT PUBLISHED ARCHIVED }
-enum TeamRole { OWNER MEMBER }
-enum TeamStatus { ACTIVE DISBANDED }
-enum InviteStatus { PENDING ACCEPTED REVOKED EXPIRED }
-
 model User {
-  id              String     @id @default(uuid()) @db.Uuid
-  email           String     @unique
-  emailVerifiedAt DateTime?
-  passwordHash    String
-  displayName     String
-  globalRole      GlobalRole @default(USER)
-  disabledAt      DateTime?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id           String   @id
+  email        String   @unique
+  displayName  String   @map("display_name")
+  platformRole String   @default("user") @map("platform_role")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  sessions      Session[]
-  memberships   TeamMember[]
-  invitesSent   TeamInvite[] @relation("InviteCreatedBy")
-  invitesUsed   TeamInvite[] @relation("InviteAcceptedBy")
-  eventsCreated Event[]      @relation("EventCreatedBy")
-  auditEntries  AuditLog[]
+  sessions    Session[]
+  memberships EventMembership[]
+  teamMembers TeamMember[]
+  scores      Score[]
+  judgeScopes JudgeScope[]
 
-  @@index([globalRole])
+  @@map("users")
 }
 
 model Session {
-  id           String    @id @default(uuid()) @db.Uuid
-  userId       String    @db.Uuid
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  refreshHash  String    @unique
-  familyId     String    @db.Uuid
-  userAgent    String?
-  ip           String?
-  expiresAt    DateTime
-  revokedAt    DateTime?
-  replacedById String?   @db.Uuid
-  createdAt    DateTime  @default(now())
+  id        String    @id
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([familyId])
-  @@index([expiresAt])
+  @@map("sessions")
 }
 
 model Event {
-  id          String      @id @default(uuid()) @db.Uuid
-  slug        String      @unique
-  name        String
-  status      EventStatus @default(DRAFT)
-  timezone    String      @default("UTC")
-  startsAt    DateTime?
-  endsAt      DateTime?
-  createdById String?     @db.Uuid
-  createdBy   User?       @relation("EventCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id               String   @id
+  slug             String   @unique
+  name             String
+  submissionsClose DateTime @map("submissions_close") @db.Timestamptz(6)
+  state            String   @default("published")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  tracks Track[]
-  teams  Team[]
+  tracks      Track[]
+  memberships EventMembership[]
+  teams       Team[]
+  projects    Project[]
+  scores      Score[]
+  judgeScopes JudgeScope[]
 
-  @@index([status])
+  @@map("events")
 }
 
 model Track {
-  id        String   @id @default(uuid()) @db.Uuid
-  eventId   String   @db.Uuid
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  slug      String
-  name      String
-  capacity  Int?
-  createdAt DateTime @default(now())
+  id      String @id
+  eventId String @map("event_id")
+  name    String
 
-  teams Team[]
+  event    Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  projects Project[]
 
-  @@unique([eventId, slug])
+  @@index([eventId])
+  @@map("tracks")
+}
+
+model EventMembership {
+  id      String @id
+  eventId String @map("event_id")
+  userId  String @map("user_id")
+  role    String
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId, role])
+  @@map("event_memberships")
+}
+
+model JudgeScope {
+  id      String @id
+  eventId String @map("event_id")
+  userId  String @map("user_id")
+  trackId String @map("track_id")
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId, trackId])
+  @@map("judge_scopes")
 }
 
 model Team {
-  id         String     @id @default(uuid()) @db.Uuid
-  eventId    String     @db.Uuid
-  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  trackId    String?    @db.Uuid
-  track      Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
-  name       String
-  slug       String
-  status     TeamStatus @default(ACTIVE)
-  maxMembers Int        @default(4)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id      String @id
+  eventId String @map("event_id")
+  name    String
 
-  members TeamMember[]
-  invites TeamInvite[]
+  event    Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  members  TeamMember[]
+  projects Project[]
 
-  @@unique([eventId, slug])
-  @@index([eventId, status])
-  @@index([trackId])
+  @@index([eventId])
+  @@map("teams")
 }
 
 model TeamMember {
-  id       String   @id @default(uuid()) @db.Uuid
-  teamId   String   @db.Uuid
-  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId   String   @db.Uuid
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  eventId  String   @db.Uuid
-  role     TeamRole @default(MEMBER)
-  joinedAt DateTime @default(now())
+  id     String @id
+  teamId String @map("team_id")
+  userId String @map("user_id")
+  role   String @default("member")
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, userId])
-  @@unique([userId, eventId])
-  @@index([teamId])
-  @@index([userId])
+  @@map("team_members")
 }
 
-model TeamInvite {
-  id           String       @id @default(uuid()) @db.Uuid
-  teamId       String       @db.Uuid
-  team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  email        String
-  role         TeamRole     @default(MEMBER)
-  tokenHash    String       @unique
-  status       InviteStatus @default(PENDING)
-  expiresAt    DateTime
-  acceptedAt   DateTime?
-  acceptedById String?      @db.Uuid
-  acceptedBy   User?        @relation("InviteAcceptedBy", fields: [acceptedById], references: [id], onDelete: SetNull)
-  createdById  String       @db.Uuid
-  createdBy    User         @relation("InviteCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
-  createdAt    DateTime     @default(now())
+model Project {
+  id          String   @id
+  eventId     String   @map("event_id")
+  teamId      String   @map("team_id")
+  trackId     String   @map("track_id")
+  title       String
+  summary     String?
+  repoUrl     String?  @map("repo_url")
+  submittedAt DateTime @map("submitted_at") @db.Timestamptz(6)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([teamId, status])
-  @@index([email])
-  @@index([expiresAt, status])
+  event  Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  team   Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  track  Track   @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  scores Score[]
+
+  @@index([eventId])
+  @@index([trackId])
+  @@map("projects")
 }
 
-model AuditLog {
-  id         String   @id @default(uuid()) @db.Uuid
-  actorId    String?  @db.Uuid
-  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
-  actorIp    String?
-  action     String
-  targetType String
-  targetId   String?
-  eventId    String?  @db.Uuid
-  metadata   Json     @default("{}")
-  createdAt  DateTime @default(now())
+model Score {
+  id            String   @id
+  eventId       String   @map("event_id")
+  judgeUserId   String   @map("judge_user_id")
+  projectId     String   @map("project_id")
+  functionality Int
+  quality       Int
+  innovation    Int
+  comment       String?
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([targetType, targetId])
-  @@index([actorId, createdAt])
-  @@index([eventId, createdAt])
-  @@index([action, createdAt])
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  judge   User    @relation(fields: [judgeUserId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([judgeUserId, projectId])
+  @@index([projectId])
+  @@map("scores")
 }

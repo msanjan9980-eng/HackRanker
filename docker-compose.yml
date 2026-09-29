@@ -1,40 +1,65 @@
+name: dogfood-2026
+
 services:
-  postgres:
+  db:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: dogfood
       POSTGRES_PASSWORD: dogfood
       POSTGRES_DB: dogfood
-    ports: ["5432:5432"]
-    volumes: ["pgdata:/var/lib/postgresql/data"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dogfood -d dogfood"]
-      interval: 5s
+      interval: 3s
       timeout: 3s
-      retries: 20
+      retries: 30
 
-  redis:
-    image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes"]
-    ports: ["6379:6379"]
-    volumes: ["redisdata:/data"]
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
+  seed:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ["sh", "-c", "npx prisma db push --schema=/app/prisma/schema.prisma --skip-generate --accept-data-loss && node dist/seed/seed.js"]
+    environment:
+      DATABASE_URL: postgres://dogfood:dogfood@db:5432/dogfood
+      NODE_ENV: production
+      FIXTURES_PATH: /app/fixtures.json
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
 
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    env_file: [.env]
-    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: postgres://dogfood:dogfood@db:5432/dogfood
+      NODE_ENV: production
+      APP_ORIGIN: http://localhost:8080
+      SESSION_SECRET: dev-only-change-me-please-32-bytes-minimum
     depends_on:
-      postgres: { condition: service_healthy }
-      redis:    { condition: service_healthy }
-    command: ["sh", "-c", "pnpm --filter @dogfood/api exec prisma migrate deploy && pnpm --filter @dogfood/api exec tsx prisma/seed.ts && pnpm --filter @dogfood/api start"]
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    expose:
+      - "3000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:
-  redisdata:

@@ -1,24 +1,21 @@
-FROM node:22-alpine AS base
-RUN corepack enable && apk add --no-cache openssl
+FROM node:22-alpine AS build
 WORKDIR /repo
-
-FROM base AS deps
-COPY pnpm-workspace.yaml package.json ./
+RUN apk add --no-cache openssl libc6-compat
+COPY package.json ./
 COPY apps/api/package.json apps/api/
-RUN pnpm install --frozen-lockfile=false
-
-FROM deps AS build
+RUN npm install --workspaces --include-workspace-root --no-audit --no-fund
 COPY apps/api apps/api
-RUN pnpm --filter @dogfood/api exec prisma generate \
- && pnpm --filter @dogfood/api build
+RUN npm -w apps/api exec prisma generate
+RUN npm -w apps/api run build
 
-FROM base AS runtime
+FROM node:22-alpine AS runtime
+WORKDIR /app
 ENV NODE_ENV=production
-RUN addgroup -S app && adduser -S app -G app
-COPY --from=build /repo /repo
-WORKDIR /repo/apps/api
-USER app
+RUN apk add --no-cache wget openssl libc6-compat
+COPY --from=build /repo/node_modules /app/node_modules
+COPY --from=build /repo/apps/api/dist /app/dist
+COPY --from=build /repo/apps/api/prisma /app/prisma
+COPY --from=build /repo/apps/api/package.json /app/package.json
+COPY fixtures.json /app/fixtures.json
 EXPOSE 3000
-HEALTHCHECK --interval=15s --timeout=3s --start-period=20s --retries=5 \
-  CMD node -e "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["node", "dist/src/server.js"]
+CMD ["node", "dist/server.js"]
