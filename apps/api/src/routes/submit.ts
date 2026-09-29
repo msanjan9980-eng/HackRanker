@@ -4,48 +4,60 @@ import { getActor } from "../auth/actor.js";
 import { randomHex } from "../lib/hash.js";
 
 export async function submitRoutes(app: FastifyInstance) {
-  app.post("/api/v1/events/:eventId/projects", async (req, reply) => {
-    const actor = await getActor(req);
-    if (!actor.userId) {
-      reply.code(401);
-      return { error: "unauthorized" };
-    }
-
-    const { eventId } = req.params as { eventId: string };
-    const event = await prisma.event.findUnique({ where: { id: eventId } });
-    if (!event) {
-      reply.code(404);
-      return { error: "event_not_found" };
-    }
-
-    if (actor.eventRoles[eventId] !== "participant") {
-      reply.code(403);
-      return { error: "forbidden" };
-    }
-
-    if (event.submissionsClose.getTime() <= Date.now()) {
-      // Append-only audit entry for a refused late submission.
-      await prisma.auditLog.create({
-        data: {
-          id: `aud_${randomHex(12)}`,
-          eventId: event.id,
-          actorId: actor.userId,
-          actorIp: req.ip ?? null,
-          action: "submission.refused.deadline",
-          targetType: "event",
-          targetId: event.id,
-          metadata: {
-            submissionsClose: event.submissionsClose.toISOString(),
-            attemptedAt: new Date().toISOString(),
-          },
+  app.post(
+    "/api/v1/events/:eventId/projects",
+    {
+      config: {
+        rateLimit: {
+          max: 10,
+          timeWindow: "1 minute",
+          keyGenerator: (req) => (req as any).cookies?.df_sid ?? req.ip,
         },
-      });
+      },
+    },
+    async (req, reply) => {
+      const actor = await getActor(req);
+      if (!actor.userId) {
+        reply.code(401);
+        return { error: "unauthorized" };
+      }
 
-      reply.code(403);
-      return { error: "submissions_closed" };
-    }
+      const { eventId } = req.params as { eventId: string };
+      const event = await prisma.event.findUnique({ where: { id: eventId } });
+      if (!event) {
+        reply.code(404);
+        return { error: "event_not_found" };
+      }
 
-    reply.code(201);
-    return { project: { id: "new" } };
-  });
+      if (actor.eventRoles[eventId] !== "participant") {
+        reply.code(403);
+        return { error: "forbidden" };
+      }
+
+      if (event.submissionsClose.getTime() <= Date.now()) {
+        // Append-only audit entry for a refused late submission.
+        await prisma.auditLog.create({
+          data: {
+            id: `aud_${randomHex(12)}`,
+            eventId: event.id,
+            actorId: actor.userId,
+            actorIp: req.ip ?? null,
+            action: "submission.refused.deadline",
+            targetType: "event",
+            targetId: event.id,
+            metadata: {
+              submissionsClose: event.submissionsClose.toISOString(),
+              attemptedAt: new Date().toISOString(),
+            },
+          },
+        });
+
+        reply.code(403);
+        return { error: "submissions_closed" };
+      }
+
+      reply.code(201);
+      return { project: { id: "new" } };
+    },
+  );
 }
