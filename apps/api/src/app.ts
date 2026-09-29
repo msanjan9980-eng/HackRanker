@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import helmet from "@fastify/helmet";
+import rateLimit from "@fastify/rate-limit";
 import { healthRoutes } from "./routes/health.js";
 import { galleryRoutes } from "./routes/gallery.js";
 import { submitRoutes } from "./routes/submit.js";
@@ -15,6 +16,12 @@ export async function buildApp() {
 
   await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cookie, { secret: process.env.SESSION_SECRET ?? "dev-only-secret" });
+
+  await app.register(rateLimit, {
+    global: false,
+    max: 120,
+    timeWindow: "1 minute",
+  });
 
   await app.register(healthRoutes);
   await app.register(galleryRoutes);
