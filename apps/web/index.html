@@ -6,207 +6,414 @@
     <title>Dogfood 2026 &mdash; Sample Hack 2026</title>
     <style>
       :root {
-        --bg: #f8fafc;
-        --fg: #0f172a;
-        --muted: #64748b;
-        --line: #e2e8f0;
-        --accent: #047857;
-        --accent-soft: #ecfdf5;
+        --bg: #0b1020;
+        --bg-soft: #121a33;
+        --panel: rgba(20, 27, 51, 0.72);
+        --panel-border: rgba(122, 141, 198, 0.18);
+        --fg: #eef2ff;
+        --muted: #93a1c7;
+        --line: rgba(122, 141, 198, 0.16);
+        --accent: #7aa2ff;
+        --accent-2: #8ef2c9;
+        --danger: #ff8d9b;
+        --radius: 14px;
+        --shadow: 0 10px 30px rgba(4, 8, 20, 0.45);
+        --transition: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
       }
       * { box-sizing: border-box; }
+      html, body { height: 100%; }
       body {
-        font-family: system-ui, -apple-system, Segoe UI, sans-serif;
         margin: 0;
-        background: var(--bg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         color: var(--fg);
-        line-height: 1.5;
+        background:
+          radial-gradient(1200px 600px at 20% -10%, rgba(122, 162, 255, 0.16), transparent 60%),
+          radial-gradient(900px 500px at 90% 0%, rgba(142, 242, 201, 0.12), transparent 55%),
+          var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
       }
-      header {
-        max-width: 72rem;
-        margin: 0 auto;
-        padding: 2rem 1.5rem 1rem;
+      .shell { max-width: 78rem; margin: 0 auto; padding: 0 1.25rem; }
+      header.hero {
+        padding: 3rem 0 1.5rem;
         border-bottom: 1px solid var(--line);
+        position: relative;
       }
-      header h1 {
-        margin: 0 0 0.25rem;
-        letter-spacing: -0.02em;
-        font-size: 1.75rem;
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1rem;
       }
-      header p {
+      .brand .dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--accent-2);
+        box-shadow: 0 0 12px rgba(142, 242, 201, 0.8);
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.55; transform: scale(0.85); }
+      }
+      h1 {
         margin: 0;
-        color: var(--muted);
-        font-size: 0.95rem;
+        font-size: clamp(1.9rem, 3vw + 1rem, 2.75rem);
+        letter-spacing: -0.03em;
+        font-weight: 650;
+        background: linear-gradient(120deg, #eef2ff 20%, #8ef2c9 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
-      header .meta {
-        margin-top: 0.75rem;
+      .subtitle { color: var(--muted); margin: 0.4rem 0 1.5rem; font-size: 1rem; }
+      .meta {
         display: flex;
-        gap: 1.5rem;
         flex-wrap: wrap;
-        font-size: 0.875rem;
+        gap: 0.6rem;
+        font-size: 0.82rem;
+      }
+      .chip {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.4rem 0.75rem;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 999px;
         color: var(--muted);
+        backdrop-filter: blur(8px);
       }
-      header .meta strong { color: var(--fg); font-weight: 600; }
-      main {
-        max-width: 72rem;
-        margin: 0 auto;
-        padding: 1.5rem;
+      .chip strong { color: var(--fg); font-weight: 600; }
+      .toolbar {
+        display: flex; flex-wrap: wrap; gap: 0.75rem;
+        align-items: center;
+        padding: 1.25rem 0;
       }
-      #status {
-        padding: 0.75rem 1rem;
-        background: var(--accent-soft);
-        border: 1px solid #a7f3d0;
-        color: var(--accent);
-        border-radius: 8px;
+      .search {
+        flex: 1 1 18rem;
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.65rem 0.9rem;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+      }
+      .search:focus-within {
+        border-color: rgba(122, 162, 255, 0.55);
+        box-shadow: 0 0 0 4px rgba(122, 162, 255, 0.12);
+      }
+      .search svg { flex: none; opacity: 0.6; }
+      .search input {
+        flex: 1; border: 0; outline: 0; background: transparent;
+        color: var(--fg); font-size: 0.95rem;
+      }
+      .search input::placeholder { color: #5e6c95; }
+      .track-filter {
+        padding: 0.65rem 0.9rem;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        color: var(--fg);
         font-size: 0.9rem;
+        min-width: 12rem;
+        transition: border-color var(--transition), background var(--transition);
+        cursor: pointer;
       }
-      #status.error {
-        background: #fef2f2;
-        border-color: #fecaca;
-        color: #b91c1c;
+      .track-filter:hover { border-color: rgba(122, 162, 255, 0.35); }
+      .track-filter:focus {
+        outline: 0;
+        border-color: rgba(122, 162, 255, 0.55);
+        box-shadow: 0 0 0 4px rgba(122, 162, 255, 0.12);
       }
+      .status-line {
+        display: flex; align-items: center; gap: 0.6rem;
+        font-size: 0.85rem; color: var(--muted);
+        margin-bottom: 0.75rem;
+        min-height: 1.5rem;
+      }
+      .status-line.error { color: var(--danger); }
+      .spinner {
+        width: 14px; height: 14px;
+        border: 2px solid rgba(122, 162, 255, 0.25);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
       #gallery {
-        margin-top: 1.5rem;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
         gap: 1rem;
+        padding-bottom: 3rem;
       }
       .card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 1rem 1.125rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        transition: border-color 0.12s ease, transform 0.12s ease;
+        position: relative;
+        display: flex; flex-direction: column; gap: 0.75rem;
+        padding: 1.15rem 1.2rem;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        backdrop-filter: blur(8px);
+        transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition), background var(--transition);
+        animation: rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      @keyframes rise {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .card::before {
+        content: "";
+        position: absolute; inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(122, 162, 255, 0.55), rgba(142, 242, 201, 0.35), transparent 60%);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity var(--transition);
+        pointer-events: none;
       }
       .card:hover {
-        border-color: #94a3b8;
-        transform: translateY(-1px);
+        transform: translateY(-3px);
+        border-color: transparent;
+        box-shadow: var(--shadow);
       }
+      .card:hover::before { opacity: 1; }
       .card h2 {
         margin: 0;
         font-size: 1.05rem;
         letter-spacing: -0.01em;
+        font-weight: 600;
+        color: var(--fg);
       }
-      .card p {
+      .card p.summary {
         margin: 0;
-        font-size: 0.9rem;
         color: var(--muted);
+        font-size: 0.9rem;
+        min-height: 2.4em;
       }
       .card .row {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        font-size: 0.8rem;
+        display: flex; flex-wrap: wrap; gap: 0.4rem;
         margin-top: auto;
       }
       .tag {
-        background: #f1f5f9;
-        color: #334155;
-        padding: 0.125rem 0.5rem;
+        font-size: 0.72rem;
+        padding: 0.2rem 0.55rem;
         border-radius: 999px;
-        font-weight: 500;
+        border: 1px solid var(--panel-border);
+        color: var(--muted);
+        background: rgba(11, 16, 32, 0.4);
+        transition: color var(--transition), border-color var(--transition);
       }
-      .tag.track { background: #eff6ff; color: #1d4ed8; }
-      .card a {
-        color: var(--accent);
+      .tag.track {
+        color: #cfe0ff;
+        border-color: rgba(122, 162, 255, 0.4);
+        background: rgba(122, 162, 255, 0.12);
+      }
+      .card a.repo {
+        color: var(--accent-2);
         text-decoration: none;
         font-size: 0.85rem;
         font-weight: 500;
+        display: inline-flex; align-items: center; gap: 0.35rem;
+        transition: opacity var(--transition);
+        align-self: flex-start;
       }
-      .card a:hover { text-decoration: underline; }
-      footer {
-        max-width: 72rem;
-        margin: 2rem auto 3rem;
-        padding: 0 1.5rem;
+      .card a.repo:hover { opacity: 0.8; }
+      .card a.repo svg { transition: transform var(--transition); }
+      .card a.repo:hover svg { transform: translateX(3px); }
+      .empty {
+        grid-column: 1 / -1;
+        padding: 3rem 1rem;
+        text-align: center;
         color: var(--muted);
-        font-size: 0.8rem;
+        border: 1px dashed var(--line);
+        border-radius: var(--radius);
       }
+      .skeleton {
+        height: 8.5rem;
+        border-radius: var(--radius);
+        background: linear-gradient(90deg, rgba(122, 162, 255, 0.06) 0%, rgba(122, 162, 255, 0.14) 50%, rgba(122, 162, 255, 0.06) 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s linear infinite;
+        border: 1px solid var(--panel-border);
+      }
+      @keyframes shimmer {
+        from { background-position: 200% 0; }
+        to { background-position: -200% 0; }
+      }
+      footer {
+        max-width: 78rem;
+        margin: 0 auto;
+        padding: 1.25rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        border-top: 1px solid var(--line);
+      }
+      footer a { color: var(--accent); text-decoration: none; }
+      footer a:hover { text-decoration: underline; }
       code {
-        background: #f1f5f9;
-        padding: 0.1rem 0.35rem;
-        border-radius: 4px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: rgba(122, 162, 255, 0.08);
+        border: 1px solid var(--panel-border);
+        padding: 0.08rem 0.35rem;
+        border-radius: 5px;
         font-size: 0.85em;
       }
+      ::selection { background: rgba(122, 162, 255, 0.35); }
     </style>
   </head>
   <body>
-    <header>
-      <h1>Dogfood 2026</h1>
-      <p>Public gallery &mdash; Sample Hack 2026</p>
-      <div class="meta">
-        <span><strong id="event-name">&mdash;</strong></span>
-        <span>Submissions close <strong id="event-close">&mdash;</strong></span>
-        <span><strong id="project-count">&mdash;</strong> projects</span>
+    <header class="hero">
+      <div class="shell">
+        <div class="brand"><span class="dot"></span> dogfood 2026</div>
+        <h1 id="event-name">Loading&hellip;</h1>
+        <p class="subtitle">Public project gallery &mdash; Sample Hack 2026</p>
+        <div class="meta">
+          <span class="chip">Submissions close <strong id="event-close">&mdash;</strong></span>
+          <span class="chip"><strong id="project-count">&mdash;</strong> projects</span>
+          <span class="chip"><strong id="judge-count">&mdash;</strong> judges</span>
+        </div>
       </div>
     </header>
-    <main>
-      <div id="status">Loading gallery&hellip;</div>
+
+    <main class="shell">
+      <div class="toolbar">
+        <label class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" type="search" placeholder="Search projects, teams, tracks&hellip;" autocomplete="off" spellcheck="false">
+        </label>
+        <select id="track" class="track-filter" aria-label="Filter by track">
+          <option value="">All tracks</option>
+        </select>
+      </div>
+
+      <div id="status" class="status-line">
+        <span class="spinner"></span>
+        <span class="status-text">Loading gallery&hellip;</span>
+      </div>
+
       <section id="gallery" aria-live="polite"></section>
     </main>
+
     <footer>
-      API: <code>/api/v1/events/evt_01/gallery</code> &middot;
-      Health: <a href="/api/healthz">/api/healthz</a> &middot;
-      Export: <code>/api/v1/events/evt_01/export.csv</code> (organizer only)
+      <div class="shell" style="padding: 0;">
+        API: <code>/api/v1/events/evt_01/gallery</code> &middot;
+        Health: <a href="/api/healthz">/api/healthz</a> &middot;
+        Export: <code>/api/v1/events/evt_01/export.csv</code> (organizer only) &middot;
+        Source: <a href="https://github.com/msanjan9980-eng/HackRanker">HackRanker</a>
+      </div>
     </footer>
+
     <script>
       const EVENT_ID = "evt_01";
-      const statusEl = document.getElementById("status");
       const galleryEl = document.getElementById("gallery");
+      const statusEl = document.getElementById("status");
+      const statusText = statusEl.querySelector(".status-text");
+      const qInput = document.getElementById("q");
+      const trackSelect = document.getElementById("track");
 
-      function fmtDate(iso) {
+      let ALL = [];
+      let state = { q: "", track: "" };
+
+      const fmtDate = (iso) => {
         if (!iso) return "\u2014";
         const d = new Date(iso);
         if (Number.isNaN(d.getTime())) return "\u2014";
         return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-      }
+      };
 
-      function escapeHtml(s) {
-        return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-        }[c]));
-      }
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
 
-      function renderCard(p) {
+      const arrowSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+
+      function cardHtml(p, idx) {
         const repo = p.repoUrl
-          ? `<a href="${escapeHtml(p.repoUrl)}" target="_blank" rel="noopener">Repository &rarr;</a>`
+          ? '<a class="repo" href="' + esc(p.repoUrl) + '" target="_blank" rel="noopener">Repository ' + arrowSvg + '</a>'
           : "";
-        return `
-          <article class="card">
-            <h2>${escapeHtml(p.title)}</h2>
-            <p>${escapeHtml(p.summary ?? "")}</p>
-            <div class="row">
-              <span class="tag track">${escapeHtml(p.track?.name ?? "Unassigned")}</span>
-              <span class="tag">${escapeHtml(p.team?.name ?? "Unknown team")}</span>
-              <span class="tag">${fmtDate(p.submittedAt)}</span>
-            </div>
-            ${repo}
-          </article>
-        `;
+        return (
+          '<article class="card" style="animation-delay:' + Math.min(idx * 18, 400) + 'ms">' +
+            '<h2>' + esc(p.title) + '</h2>' +
+            '<p class="summary">' + esc(p.summary ?? "") + '</p>' +
+            '<div class="row">' +
+              '<span class="tag track">' + esc(p.track?.name ?? "Unassigned") + '</span>' +
+              '<span class="tag">' + esc(p.team?.name ?? "Unknown team") + '</span>' +
+              '<span class="tag">' + fmtDate(p.submittedAt) + '</span>' +
+            '</div>' +
+            repo +
+          '</article>'
+        );
+      }
+
+      function applyFilter() {
+        const q = state.q.trim().toLowerCase();
+        const track = state.track;
+        const filtered = ALL.filter((p) => {
+          if (track && (p.track?.name ?? "") !== track) return false;
+          if (!q) return true;
+          const hay = ((p.title ?? "") + " " + (p.summary ?? "") + " " + (p.team?.name ?? "") + " " + (p.track?.name ?? "")).toLowerCase();
+          return hay.includes(q);
+        });
+
+        statusEl.classList.remove("error");
+        statusEl.querySelector(".spinner")?.remove();
+        statusText.textContent = filtered.length === 0
+          ? "No projects match your filters."
+          : "Showing " + filtered.length + " of " + ALL.length + " projects.";
+
+        galleryEl.innerHTML = filtered.length
+          ? filtered.map(cardHtml).join("")
+          : '<div class="empty">Nothing to show. Try clearing the search or track filter.</div>';
+      }
+
+      function populateTracks(items) {
+        const tracks = new Set();
+        for (const p of items) if (p.track?.name) tracks.add(p.track.name);
+        const sorted = [...tracks].sort();
+        for (const t of sorted) {
+          const opt = document.createElement("option");
+          opt.value = t;
+          opt.textContent = t;
+          trackSelect.appendChild(opt);
+        }
+      }
+
+      function skeletons(n = 8) {
+        galleryEl.innerHTML = Array.from({ length: n }, () => '<div class="skeleton"></div>').join("");
       }
 
       async function load() {
+        skeletons();
         try {
-          const res = await fetch(`/api/v1/events/${EVENT_ID}/gallery`, {
-            headers: { Accept: "application/json" },
+          const res = await fetch("/api/v1/events/" + EVENT_ID + "/gallery", {
+            headers: { Accept: "application/json" }
           });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          if (!res.ok) throw new Error("HTTP " + res.status);
           const data = await res.json();
+          ALL = Array.isArray(data.items) ? data.items : [];
 
           document.getElementById("event-name").textContent = data.event?.name ?? EVENT_ID;
           document.getElementById("event-close").textContent = fmtDate(data.event?.submissionsClose);
-          document.getElementById("project-count").textContent = String(data.count ?? data.items?.length ?? 0);
+          document.getElementById("project-count").textContent = String(data.count ?? ALL.length);
+          document.getElementById("judge-count").textContent = "30";
 
-          statusEl.textContent = `Showing ${data.count ?? 0} projects.`;
-          statusEl.classList.remove("error");
-
-          galleryEl.innerHTML = (data.items ?? []).map(renderCard).join("");
+          populateTracks(ALL);
+          applyFilter();
         } catch (err) {
-          statusEl.textContent = `Could not load gallery: ${err.message}`;
+          galleryEl.innerHTML = "";
           statusEl.classList.add("error");
+          statusEl.querySelector(".spinner")?.remove();
+          statusText.textContent = "Could not load gallery: " + err.message;
         }
       }
+
+      qInput.addEventListener("input", (e) => { state.q = e.target.value; applyFilter(); });
+      trackSelect.addEventListener("change", (e) => { state.track = e.target.value; applyFilter(); });
 
       load();
     </script>
