@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Status &mdash; Dogfood 2026</title>
+    <title>Status | Sample Hack 2026</title>
+    <meta name="description" content="Live status of the Sample Hack 2026 deployment: health endpoint, project count, deadline enforcement.">
     <style>
       :root{
         --bg:#0b0b0c;--surface:#131315;--surface-2:#1a1a1d;
@@ -49,6 +50,17 @@
       footer a{color:var(--text-muted);text-decoration:none}
       footer a:hover{color:var(--text);text-decoration:underline;text-underline-offset:2px}
       code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--surface-2);border:1px solid var(--border);padding:1px 6px;border-radius:var(--radius-sm);font-size:0.88em;color:var(--text-muted)}
+@media (max-width:640px){
+.shell{padding-left:20px;padding-right:20px}
+.hero-top{flex-direction:column;align-items:flex-start;gap:16px}
+.nav-links{width:100%;flex-wrap:wrap}
+.nav-link{flex:1 1 auto;justify-content:center}
+.search{flex:1 1 100%}
+.track-filter{flex:1 1 100%;min-width:0}
+#gallery{grid-template-columns:1fr !important}
+h1{font-size:24px}
+main{padding:24px 0 48px}
+}
     </style>
   </head>
   <body>
@@ -61,14 +73,14 @@
     </header>
     <main class="shell">
       <div class="grid">
-        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">â€”</div></div>
-        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">â€”</div></div>
-        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">â€”</div></div>
+        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â</div></div>
+        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â</div></div>
+        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â</div></div>
       </div>
       <div class="panel">
-        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checkingâ€¦</span></div>
-        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checkingâ€¦</span></div>
-        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checkingâ€¦</span></div>
+        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checkingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</span></div>
+        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checkingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</span></div>
+        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checkingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</span></div>
       </div>
     </main>
     <footer>
@@ -97,14 +109,14 @@
           set(1, h.ok, h.ok ? "200 OK" : "HTTP " + h.status);
         } catch (e) {
           set(1, false, "unreachable");
-          document.getElementById("k-latency").textContent = "â€”";
+          document.getElementById("k-latency").textContent = "ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â";
         }
         try {
           var g = await fetch("/api/v1/events/evt_01/gallery");
           var data = await g.json();
           document.getElementById("k-projects").textContent = String(data.count || 0);
           document.getElementById("k-projects").className = "value ok";
-          set(2, g.ok, g.ok ? "200 Â· " + (data.count || 0) + " items" : "HTTP " + g.status);
+          set(2, g.ok, g.ok ? "200 Ãƒâ€šÃ‚Â· " + (data.count || 0) + " items" : "HTTP " + g.status);
           var close = data.event && data.event.submissionsClose ? new Date(data.event.submissionsClose) : null;
           if (close && close < new Date()) {
             document.getElementById("k-judges").textContent = "30";
