@@ -70,6 +70,7 @@ Three principles:
 | GET | /api/v1/me/scores | judge or organizer | Caller's own scores |
 | GET | /api/v1/judges/:judgeId/scores | self or organizer | Peer scores, 403 otherwise |
 | GET | /api/v1/events/:eventId/export.csv | organizer | Project list as CSV |
+| GET | /api/v1/events/:eventId/scores/normalized | organizer | Cross-judge normalized scores (robust_z), JSON |
 
 ## Auth
 
