@@ -207,8 +207,8 @@ purely schema-level today:
 - Automated duplicate detection - not implemented
 - Session anomaly detection - not implemented
 
-The remaining gaps are rate limiting (no buckets), email verification
-(no SMTP, offline constraint), and audit logging (schema not yet
-shipped).
+The remaining gaps are email verification (no SMTP, offline
+constraint), automatic duplicate detection, and session anomaly
+detection.
 
 None of these are hidden. Each is a documented next step.
