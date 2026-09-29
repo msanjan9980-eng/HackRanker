@@ -16,6 +16,8 @@ COPY --from=build /repo/node_modules /app/node_modules
 COPY --from=build /repo/apps/api/dist /app/dist
 COPY --from=build /repo/apps/api/prisma /app/prisma
 COPY --from=build /repo/apps/api/package.json /app/package.json
+COPY --from=build /repo/apps/api/test /app/test
+COPY --from=build /repo/apps/api/src /app/src
 COPY fixtures.json /app/fixtures.json
 EXPOSE 3000
 CMD ["node", "dist/server.js"]

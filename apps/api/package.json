@@ -7,7 +7,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "seed": "node dist/seed/seed.js",
-    "prisma:push": "prisma db push --skip-generate"
+    "prisma:push": "prisma db push --skip-generate",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fastify/cookie": "^10.0.1",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^22.7.4",
     "prisma": "^5.22.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.8"
   }
 }
