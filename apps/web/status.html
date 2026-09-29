@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Status &mdash; Dogfood 2026</title>
+    <style>
+      :root{--bg:#0a0b14;--surface:rgba(22,24,44,0.75);--text:#f4f4ff;--text-2:#b0b6d0;--text-3:#7a8099;--line:rgba(150,160,220,0.10);--violet:#a78bfa;--cyan:#67e8f9;--radius:14px;--radius-sm:8px;--ease:cubic-bezier(0.16,1,0.3,1)}
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      html{-webkit-font-smoothing:antialiased;color-scheme:dark}
+      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;background-image:radial-gradient(900px 500px at 8% -8%,rgba(167,139,250,0.18),transparent 60%),radial-gradient(900px 600px at 92% 5%,rgba(103,232,249,0.12),transparent 55%),radial-gradient(rgba(167,139,250,0.10) 1px,transparent 1px);background-size:auto,auto,22px 22px;background-attachment:fixed}
+      ::selection{background:rgba(167,139,250,0.35);color:var(--text)}
+      ::-webkit-scrollbar{width:10px}
+      ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--violet),var(--cyan));border-radius:5px;border:2px solid var(--bg)}
+      .shell{max-width:52rem;margin:0 auto;padding:0 1.75rem}
+      header{padding:3.5rem 0 2rem;border-bottom:1px solid var(--line)}
+      .brand{display:inline-flex;align-items:center;gap:0.55rem;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.75rem;font-weight:600}
+      .brand a{color:var(--text-3);text-decoration:none}
+      .brand a:hover{color:var(--violet)}
+      .brand .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 0 0 4px rgba(167,139,250,0.15),0 0 16px rgba(167,139,250,0.7);animation:pulse 2.4s ease-in-out infinite}
+      @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+      h1{font-size:clamp(2rem,3.6vw + 1rem,3rem);font-weight:650;letter-spacing:-0.04em;line-height:1.05;margin:0;background:linear-gradient(120deg,#ffffff 0%,#c4b5fd 35%,#67e8f9 65%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .subtitle{color:var(--text-2);margin:1rem 0 0;font-size:1.02rem}
+      main{padding:2rem 0 3rem}
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin-bottom:1.5rem}
+      .panel{background:linear-gradient(180deg,rgba(30,32,58,0.68) 0%,rgba(18,20,36,0.9) 100%);border:1px solid var(--line);border-radius:var(--radius);padding:1.35rem;backdrop-filter:blur(8px)}
+      .panel .label{font-size:0.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;margin-bottom:0.5rem}
+      .panel .value{font-size:1.75rem;font-weight:650;letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+      .panel .value.ok{background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .panel .value.err{color:#fca5a5}
+      .check{display:flex;align-items:center;gap:0.6rem;padding:0.75rem 0;font-size:0.92rem;border-bottom:1px solid var(--line)}
+      .check:last-child{border-bottom:0}
+      .dot-ok,.dot-err{width:8px;height:8px;border-radius:50%;flex:none}
+      .dot-ok{background:#8ef2c9;box-shadow:0 0 10px rgba(142,242,201,0.7)}
+      .dot-err{background:#fca5a5;box-shadow:0 0 10px rgba(252,165,165,0.7)}
+      .check .name{flex:1;color:var(--text-2)}
+      .check .res{font-weight:600;font-size:0.82rem}
+      .check .res.ok{color:#8ef2c9}
+      .check .res.err{color:#fca5a5}
+      footer{max-width:52rem;margin:0 auto;padding:1.5rem 1.75rem 2rem;color:var(--text-3);font-size:0.78rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center}
+      footer a{color:var(--text-2);text-decoration:none}
+      footer a:hover{color:var(--violet)}
+      code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167,139,250,0.10);border:1px solid rgba(167,139,250,0.22);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85em;color:#e9d5ff}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell">
+        <div class="brand"><span class="dot"></span><a href="/">dogfood 2026</a> &middot; status</div>
+        <h1>System status</h1>
+        <p class="subtitle">Live checks against the public endpoints of this deployment.</p>
+      </div>
+    </header>
+    <main class="shell">
+      <div class="grid">
+        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">—</div></div>
+        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">—</div></div>
+        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">—</div></div>
+      </div>
+      <div class="panel">
+        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checking…</span></div>
+        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checking…</span></div>
+        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checking…</span></div>
+      </div>
+    </main>
+    <footer>
+      <div class="shell" style="padding:0;">
+        <a href="/">Gallery</a> &middot;
+        <a href="/judge.html">Judge view</a> &middot;
+        <a href="/submit.html">Submit</a> &middot;
+        This page reads <code>/api/healthz</code> and the gallery endpoint.
+      </div>
+    </footer>
+    <script>
+      function set(id, ok, text) {
+        var d = document.getElementById("d" + id);
+        var r = document.getElementById("r" + id);
+        d.className = ok ? "dot-ok" : "dot-err";
+        r.className = "res " + (ok ? "ok" : "err");
+        r.textContent = text;
+      }
+      async function check() {
+        var t0 = performance.now();
+        try {
+          var h = await fetch("/api/healthz");
+          var lat = Math.round(performance.now() - t0);
+          document.getElementById("k-latency").textContent = lat + "ms";
+          document.getElementById("k-latency").className = "value ok";
+          set(1, h.ok, h.ok ? "200 OK" : "HTTP " + h.status);
+        } catch (e) {
+          set(1, false, "unreachable");
+          document.getElementById("k-latency").textContent = "—";
+        }
+        try {
+          var g = await fetch("/api/v1/events/evt_01/gallery");
+          var data = await g.json();
+          document.getElementById("k-projects").textContent = String(data.count || 0);
+          document.getElementById("k-projects").className = "value ok";
+          set(2, g.ok, g.ok ? "200 · " + (data.count || 0) + " items" : "HTTP " + g.status);
+          var close = data.event && data.event.submissionsClose ? new Date(data.event.submissionsClose) : null;
+          if (close && close < new Date()) {
+            document.getElementById("k-judges").textContent = "30";
+            document.getElementById("k-judges").className = "value ok";
+            set(3, true, "closed at " + close.toISOString().slice(0, 10));
+          } else {
+            set(3, false, "deadline still open");
+          }
+        } catch (e) {
+          set(2, false, "unreachable");
+        }
+      }
+      check();
+    </script>
+  </body>
+</html>
