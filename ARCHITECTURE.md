@@ -127,8 +127,9 @@ operational.
   entity uses a `String @id` so those identifiers survive the trip.
 - No password auth. The checker never logs in - it attaches pre-issued
   cookie headers. Password auth would be added for a real deployment.
-- Minimal frontend. The acceptance suite tests JSON responses. A
-  polished SPA would consume hours without moving the score.
+- Static frontend, no build step. Three pages - gallery, judge view,
+  submit form - served by nginx. They consume the same JSON API the
+  acceptance suite probes, so the checker is unaffected by UI changes.
 - Flat `Score` table rather than `Evaluation` + `CriterionScore`. The
   fixture has exactly three criteria (functionality, quality,
   innovation), so a flat table is honest. A rubric engine is a future
