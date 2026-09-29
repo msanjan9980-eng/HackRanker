@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "workspaces": ["apps/api"],
+  "workspaces": [
+    "apps/api"
+  ],
   "scripts": {
     "build": "npm -w apps/api run build"
   }
