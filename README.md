@@ -89,8 +89,10 @@ the receipt.
 - Runtime: Node 22 + Fastify 5 + TypeScript
 - Database: PostgreSQL 16 (container)
 - ORM: Prisma 5
-- Frontend: static page served by nginx (deliberately minimal - the
-  acceptance suite probes JSON routes)
+- Frontend: three static pages served by nginx - a grouped project
+  gallery with search, sort, track filter, and click-to-open modal;
+  a judge view rendered from the session cookie; and a submit form
+  that surfaces the exact API refusal. No build step, no framework.
 - Auth: cookie-based sessions (`df_sid`), SHA-256-hashed tokens
 
 Full details in `ARCHITECTURE.md`. Schema in `DATA-MODEL.md`. Judging
