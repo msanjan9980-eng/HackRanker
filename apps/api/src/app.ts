@@ -6,6 +6,9 @@ import { galleryRoutes } from "./routes/gallery.js";
 import { submitRoutes } from "./routes/submit.js";
 import { scoreRoutes } from "./routes/scores.js";
 import { exportRoutes } from "./routes/export.js";
+import { voteRoutes } from "./routes/votes.js";
+import { commentRoutes } from "./routes/comments.js";
+import { auditRoutes } from "./routes/audit.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -21,6 +24,9 @@ export async function buildApp() {
   await app.register(submitRoutes);
   await app.register(scoreRoutes);
   await app.register(exportRoutes);
+  await app.register(voteRoutes);
+  await app.register(commentRoutes);
+  await app.register(auditRoutes);
 
   return app;
 }

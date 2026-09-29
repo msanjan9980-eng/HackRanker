@@ -138,6 +138,84 @@ async function main() {
     });
   }
 
+  // ---- T3 seed ----
+  const roundId = "vr_01";
+  await prisma.voteRound.create({
+    data: {
+      id: roundId,
+      eventId: fixture.event.id,
+      name: "Community Favourite",
+      state: "open",
+      opensAt: new Date("2026-02-28T18:00:00Z"),
+      closesAt: new Date("2026-03-15T18:00:00Z"),
+      resultsHidden: true,
+    },
+  });
+
+  const voteTargets = ["prj_01", "prj_02", "prj_03", "prj_05", "prj_07", "prj_08"];
+  const voterEmails = ["priya1@example.org", "member1_1@example.org", "member1_2@example.org"];
+  let voteIdx = 0;
+  for (const email of voterEmails) {
+    const uid = userIdFromEmail(email);
+    for (let i = 0; i < 3; i++) {
+      const projectId = voteTargets[(voteIdx + i) % voteTargets.length];
+      try {
+        await prisma.vote.create({
+          data: { id: "vt_" + voteIdx, roundId, voterUserId: uid, projectId, value: 1 },
+        });
+      } catch { /* duplicate */ }
+      voteIdx++;
+    }
+  }
+
+  const commentSeed = [
+    { project: "prj_01", author: "priya1@example.org", body: "Clean idea, love the name." },
+    { project: "prj_01", author: "member1_1@example.org", body: "Would be great to see a demo video." },
+    { project: "prj_07", author: "member1_2@example.org", body: "Submitted twice - intentional?" },
+    { project: "prj_15", author: "priya1@example.org", body: "Nice use of the fixture data." },
+  ];
+  let ci = 0;
+  for (const c of commentSeed) {
+    await prisma.comment.create({
+      data: {
+        id: "cm_" + ci,
+        eventId: fixture.event.id,
+        projectId: c.project,
+        authorUserId: userIdFromEmail(c.author),
+        body: c.body,
+        status: "visible",
+      },
+    });
+    ci++;
+  }
+
+  const auditSeed = [
+    { action: "event.published", entityType: "event", entityId: fixture.event.id },
+    { action: "assignment.generated", entityType: "assignment_batch", entityId: "batch_01" },
+    { action: "results.published", entityType: "results", entityId: "run_01" },
+  ];
+  let ai = 0;
+  for (const a of auditSeed) {
+    await prisma.auditLog.create({
+      data: {
+        id: "au_" + ai,
+        eventId: fixture.event.id,
+        actorUserId: orgId,
+        actorRole: "organizer",
+        action: a.action,
+        entityType: a.entityType,
+        entityId: a.entityId,
+      },
+    });
+    ai++;
+  }
+
+  console.log("seed T3: loaded", JSON.stringify({
+    voteRounds: await prisma.voteRound.count(),
+    votes: await prisma.vote.count(),
+    comments: await prisma.comment.count(),
+    audit: await prisma.auditLog.count(),
+  }));
   const participantId = userIdFromEmail("priya1@example.org");
   await prisma.session.create({
     data: { id: "sess_prt", userId: participantId, tokenHash: sha256Hex(SEED_TOKENS.participant) },

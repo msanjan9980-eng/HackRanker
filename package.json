@@ -1,10 +1,16 @@
 {
   "name": "dogfood-2026",
   "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "workspaces": ["apps/api"],
+  "packageManager": "pnpm@9.12.0",
+  "engines": { "node": ">=22" },
   "scripts": {
-    "build": "npm -w apps/api run build"
+    "dev": "pnpm --filter @dogfood/api dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "acceptance": "pnpm --filter @dogfood/api acceptance",
+    "db:migrate": "pnpm --filter @dogfood/api db:migrate",
+    "db:seed": "pnpm --filter @dogfood/api db:seed",
+    "compose:up": "docker compose up -d postgres redis",
+    "compose:down": "docker compose down -v"
   }
 }
