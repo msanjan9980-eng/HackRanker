@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Submit a project &mdash; Dogfood 2026</title>
+    <style>
+      :root{--bg:#0a0b14;--surface:rgba(22,24,44,0.75);--text:#f4f4ff;--text-2:#b0b6d0;--text-3:#7a8099;--line:rgba(150,160,220,0.10);--violet:#a78bfa;--cyan:#67e8f9;--pink:#f472b6;--gold:#fbbf24;--accent:#a78bfa;--accent-border:rgba(167,139,250,0.4);--radius:14px;--radius-sm:8px;--ease:cubic-bezier(0.16,1,0.3,1)}
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      html{-webkit-font-smoothing:antialiased;color-scheme:dark}
+      body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;background-image:radial-gradient(900px 500px at 8% -8%,rgba(167,139,250,0.18),transparent 60%),radial-gradient(900px 600px at 92% 5%,rgba(103,232,249,0.12),transparent 55%),radial-gradient(rgba(167,139,250,0.10) 1px,transparent 1px);background-size:auto,auto,22px 22px;background-attachment:fixed}
+      ::selection{background:rgba(167,139,250,0.35);color:var(--text)}
+      ::-webkit-scrollbar{width:10px}
+      ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--violet),var(--cyan));border-radius:5px;border:2px solid var(--bg)}
+      .shell{max-width:44rem;margin:0 auto;padding:0 1.75rem}
+      header{padding:3.5rem 0 2rem;border-bottom:1px solid var(--line)}
+      .brand{display:inline-flex;align-items:center;gap:0.55rem;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.75rem;font-weight:600}
+      .brand a{color:var(--text-3);text-decoration:none}
+      .brand a:hover{color:var(--violet)}
+      .brand .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 0 0 4px rgba(167,139,250,0.15),0 0 16px rgba(167,139,250,0.7);animation:pulse 2.4s ease-in-out infinite}
+      @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+      h1{font-size:clamp(2rem,3.6vw + 1rem,3rem);font-weight:650;letter-spacing:-0.04em;line-height:1.05;margin:0;background:linear-gradient(120deg,#ffffff 0%,#c4b5fd 35%,#67e8f9 65%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .subtitle{color:var(--text-2);margin:1rem 0 0;font-size:1.02rem}
+      .subtitle code{background:rgba(167,139,250,0.10);border:1px solid rgba(167,139,250,0.22);padding:0.1rem 0.4rem;border-radius:4px;color:#e9d5ff;font-size:0.9em}
+      main{padding:2rem 0 3rem}
+      form{background:linear-gradient(180deg,rgba(30,32,58,0.68) 0%,rgba(18,20,36,0.9) 100%);border:1px solid var(--line);border-radius:var(--radius);padding:1.75rem;backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:1.15rem}
+      label{display:flex;flex-direction:column;gap:0.4rem}
+      label span{font-size:0.72rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:600}
+      input,textarea,select{font-family:inherit;font-size:0.95rem;background:rgba(11,16,32,0.6);border:1px solid var(--line);border-radius:var(--radius-sm);padding:0.7rem 0.9rem;color:var(--text);transition:border-color 200ms var(--ease),box-shadow 200ms var(--ease),background 200ms var(--ease)}
+      input:focus,textarea:focus,select:focus{outline:0;border-color:var(--accent-border);background:rgba(32,35,62,0.85);box-shadow:0 0 0 4px rgba(167,139,250,0.12),0 0 24px -8px rgba(167,139,250,0.5)}
+      textarea{resize:vertical;min-height:5rem}
+      select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a78bfa' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.6rem}
+      button{font-family:inherit;font-size:0.95rem;font-weight:600;letter-spacing:-0.01em;padding:0.8rem 1.35rem;border:0;border-radius:var(--radius-sm);color:#0b1020;background:linear-gradient(120deg,var(--cyan),var(--violet));cursor:pointer;transition:transform 200ms var(--ease),box-shadow 200ms var(--ease);align-self:flex-start}
+      button:hover{transform:translateY(-1px);box-shadow:0 12px 28px -12px rgba(167,139,250,0.7)}
+      button:disabled{opacity:0.5;cursor:wait;transform:none}
+      .result{margin-top:1.35rem;padding:1rem 1.15rem;border-radius:var(--radius-sm);border:1px solid var(--line);font-size:0.92rem;display:none;line-height:1.6}
+      .result.show{display:block;animation:rise 300ms var(--ease)}
+      .result.ok{border-color:rgba(142,242,201,0.4);color:#8ef2c9;background:rgba(142,242,201,0.06)}
+      .result.err{border-color:rgba(255,141,155,0.45);color:#fca5a5;background:rgba(255,141,155,0.06)}
+      @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+      .note{margin-top:1.25rem;padding:0.95rem 1.15rem;border-radius:var(--radius-sm);background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.20);font-size:0.85rem;color:var(--text-2);line-height:1.6}
+      .note code{background:rgba(167,139,250,0.10);border:1px solid rgba(167,139,250,0.22);padding:0.08rem 0.35rem;border-radius:3px;color:#e9d5ff;font-size:0.9em}
+      footer{max-width:44rem;margin:0 auto;padding:1.5rem 1.75rem 2rem;color:var(--text-3);font-size:0.78rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center}
+      footer a{color:var(--text-2);text-decoration:none}
+      footer a:hover{color:var(--violet)}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell">
+        <div class="brand"><span class="dot"></span><a href="/">dogfood 2026</a></div>
+        <h1>Submit a project</h1>
+        <p class="subtitle">POSTs to <code>/api/v1/events/evt_01/projects</code>. Requires a <code>df_sid</code> cookie with the participant role.</p>
+      </div>
+    </header>
+    <main class="shell">
+      <form id="form">
+        <label>
+          <span>Title</span>
+          <input name="title" required minlength="2" maxlength="120" placeholder="e.g. Glass Signal">
+        </label>
+        <label>
+          <span>Summary</span>
+          <textarea name="summary" maxlength="280" placeholder="One line on what it does."></textarea>
+        </label>
+        <label>
+          <span>Repository URL</span>
+          <input name="repoUrl" type="url" placeholder="https://example.org/repo">
+        </label>
+        <label>
+          <span>Track</span>
+          <select name="trackId" required>
+            <option value="">Select a track&hellip;</option>
+            <option value="trk_01">Developer tools</option>
+            <option value="trk_02">Data and analytics</option>
+            <option value="trk_03">Accessibility</option>
+            <option value="trk_04">Security</option>
+            <option value="trk_05">Climate</option>
+            <option value="trk_06">Health</option>
+            <option value="trk_07">Education</option>
+            <option value="trk_08">Open hardware</option>
+          </select>
+        </label>
+        <button id="submit" type="submit">Submit project</button>
+      </form>
+      <div id="result" class="result"></div>
+      <div class="note">The fixture event&rsquo;s <code>submissions_close</code> is 2026-03-01. The server refuses late submissions by design. This page shows the exact response the API returns.</div>
+    </main>
+    <footer>
+      <div class="shell" style="padding:0;">
+        <a href="/">Gallery</a> &middot;
+        <a href="/judge.html">Judge view</a> &middot;
+        API: POST /api/v1/events/evt_01/projects
+      </div>
+    </footer>
+    <script>
+      var form = document.getElementById("form");
+      var btn = document.getElementById("submit");
+      var result = document.getElementById("result");
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        btn.disabled = true;
+        result.className = "result show";
+        result.textContent = "Submitting\u2026";
+        var data = new FormData(form);
+        var body = {
+          title: String(data.get("title") || "").trim(),
+          summary: String(data.get("summary") || "").trim() || null,
+          repoUrl: String(data.get("repoUrl") || "").trim() || null,
+          trackId: String(data.get("trackId") || "")
+        };
+        fetch("/api/v1/events/evt_01/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(body)
+        })
+        .then(function (res) {
+          return res.text().then(function (t) {
+            var parsed;
+            try { parsed = JSON.parse(t); } catch (err) { parsed = { raw: t }; }
+            return { res: res, parsed: parsed };
+          });
+        })
+        .then(function (r) {
+          if (r.res.ok) {
+            result.className = "result show ok";
+            result.textContent = "Accepted: " + JSON.stringify(r.parsed);
+          } else {
+            result.className = "result show err";
+            var code = (r.parsed && r.parsed.error) ? r.parsed.error : "HTTP " + r.res.status;
+            result.textContent = "Refused (" + r.res.status + "): " + code;
+          }
+        })
+        .catch(function (err) {
+          result.className = "result show err";
+          result.textContent = "Request failed: " + err.message;
+        })
+        .finally(function () { btn.disabled = false; });
+      });
+    </script>
+  </body>
+</html>
