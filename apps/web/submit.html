@@ -65,12 +65,16 @@
         form{padding:28px}
         footer{padding:32px 0}
       }
+.brand-row{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.brand-row .brand{padding:0}
+.top-signin{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--bmw-blue);text-decoration:none;transition:color 150ms ease}
+.top-signin:hover{color:var(--bmw-blue-hover);text-decoration:underline;text-underline-offset:3px}
     </style>
   </head>
   <body>
     <header>
       <div class="shell">
-        <div class="brand"><span class="dot"></span><a href="/">HackRanker</a></div>
+        <div class="brand-row"><div class="brand"><span class="dot"></span><a href="/">HackRanker</a></div></div><a class="top-signin" href="/login.html">Sign in</a></div>
         <h1>Submit a project</h1>
         <p class="subtitle">POSTs to <code>/api/v1/events/evt_01/projects</code>. Requires a <code>df_sid</code> cookie with the participant role.</p>
       </div>

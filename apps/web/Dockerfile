@@ -5,3 +5,4 @@ COPY apps/web/judge.html /usr/share/nginx/html/judge.html
 COPY apps/web/submit.html /usr/share/nginx/html/submit.html
 COPY apps/web/status.html /usr/share/nginx/html/status.html
 COPY apps/web/404.html /usr/share/nginx/html/404.html
+COPY apps/web/login.html /usr/share/nginx/html/login.html

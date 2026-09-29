@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in | HackRanker</title>
+    <meta name="description" content="Select a role to explore HackRanker. These are fixture sessions, not real credentials.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231c69d4'/%3E%3Crect x='9' y='9' width='2' height='14' fill='%23ffffff'/%3E%3Crect x='21' y='9' width='2' height='14' fill='%23ffffff'/%3E%3Crect x='9' y='15' width='14' height='2' fill='%23ffffff'/%3E%3C/svg%3E">
+    <style>
+      :root{--bmw-blue:#1c69d4;--bmw-blue-hover:#0653b6;--ink:#262626;--body:#3c3c3c;--muted:#757575;--hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#ffffff;--surface-soft:#f7f7f7;--dark:#1a2129;--on-dark:#ffffff;--on-dark-soft:#bbbbbb}
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      html{-webkit-font-smoothing:antialiased;color-scheme:light}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--canvas);color:var(--ink);font-size:16px;line-height:1.55;min-height:100vh;display:flex;flex-direction:column}
+      a{color:var(--bmw-blue);text-decoration:none;transition:color 150ms ease}
+      a:hover{color:var(--bmw-blue-hover);text-decoration:underline;text-underline-offset:3px}
+      ::selection{background:var(--bmw-blue);color:var(--canvas)}
+      .shell{max-width:760px;margin:0 auto;padding:0 32px}
+      header{padding:0;border-bottom:1px solid var(--hairline)}
+      .brand{display:inline-flex;align-items:center;gap:10px;padding:20px 0;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink)}
+      .brand a{color:var(--ink)}
+      .brand::before{content:"";width:10px;height:10px;background:var(--bmw-blue);display:block}
+      main{flex:1;padding:72px 0 64px}
+      h1{font-size:clamp(32px,4vw,48px);font-weight:300;line-height:1.1;letter-spacing:-0.015em;margin:0 0 16px;color:var(--ink)}
+      .subtitle{color:var(--body);font-size:16px;line-height:1.65;margin:0 0 40px;font-weight:300;max-width:60ch}
+      .subtitle code{background:var(--surface-soft);border:1px solid var(--hairline);padding:2px 8px;font-size:0.88em;color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+      .current{padding:20px 24px;background:var(--surface-soft);border:1px solid var(--hairline);margin-bottom:24px;font-size:14px;color:var(--body);display:none}
+      .current.show{display:block}
+      .current strong{color:var(--ink)}
+      .signout{font-family:inherit;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:10px 18px;border:1px solid var(--hairline-strong);background:transparent;color:var(--ink);cursor:pointer;margin-top:14px;transition:background 150ms ease,color 150ms ease,border-color 150ms ease}
+      .signout:hover{background:var(--ink);color:var(--canvas);border-color:var(--ink)}
+      .roles{display:flex;flex-direction:column;border:1px solid var(--hairline);margin-bottom:24px}
+      .role{display:flex;align-items:center;gap:18px;padding:22px 24px;background:var(--canvas);border:0;border-bottom:1px solid var(--hairline);text-align:left;font-family:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:background 150ms ease;width:100%}
+      .role:last-child{border-bottom:0}
+      .role:hover{background:var(--surface-soft)}
+      .role .icon{width:36px;height:36px;flex:none;background:var(--bmw-blue);color:var(--canvas);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+      .role .meta{flex:1;display:flex;flex-direction:column;gap:4px}
+      .role .name{font-weight:600;color:var(--ink)}
+      .role .desc{font-size:13px;color:var(--muted)}
+      .role .arrow{color:var(--muted);font-size:18px;line-height:1}
+      .note{padding:20px 24px;background:var(--surface-soft);border:1px solid var(--hairline);font-size:13px;color:var(--body);line-height:1.7;font-weight:300}
+      .note strong{font-weight:600;color:var(--ink)}
+      footer{background:var(--dark);color:var(--on-dark-soft);padding:40px 0;font-size:13px}
+      footer .shell{display:flex;flex-wrap:wrap;gap:32px;align-items:center}
+      footer a{color:var(--on-dark);text-transform:uppercase;font-size:12px;letter-spacing:0.08em;font-weight:500}
+      footer a:hover{color:var(--bmw-blue);text-decoration:none}
+      @media(max-width:640px){.shell{padding-left:20px;padding-right:20px}h1{font-size:28px}main{padding:48px 0 40px}.role{padding:18px 20px}}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell">
+        <div class="brand"><a href="/">HackRanker</a> &middot; sign in</div>
+      </div>
+    </header>
+    <main>
+      <div class="shell">
+        <h1>Choose a role</h1>
+        <p class="subtitle">HackRanker uses fixture sessions to demonstrate role-based access. Pick a role below to set the <code>df_sid</code> cookie in this browser and continue to the judge view.</p>
+        <div id="current" class="current"></div>
+        <div class="roles">
+          <button class="role" data-token="seed-token-organizer" data-role="organizer">
+            <span class="icon">O</span>
+            <span class="meta"><span class="name">Organizer</span><span class="desc">Event administration, CSV export, normalized scores</span></span>
+            <span class="arrow">&rarr;</span>
+          </button>
+          <button class="role" data-token="seed-token-judge-a" data-role="judge_a">
+            <span class="icon">J</span>
+            <span class="meta"><span class="name">Judge A</span><span class="desc">Own score sheet and judge view</span></span>
+            <span class="arrow">&rarr;</span>
+          </button>
+          <button class="role" data-token="seed-token-judge-b" data-role="judge_b">
+            <span class="icon">J</span>
+            <span class="meta"><span class="name">Judge B</span><span class="desc">Second judge account, isolated scores</span></span>
+            <span class="arrow">&rarr;</span>
+          </button>
+          <button class="role" data-token="seed-token-participant" data-role="participant">
+            <span class="icon">P</span>
+            <span class="meta"><span class="name">Participant</span><span class="desc">Submit projects (refused on the closed fixture event)</span></span>
+            <span class="arrow">&rarr;</span>
+          </button>
+        </div>
+        <div class="note">
+          <strong>About these roles.</strong> They map to fixture sessions the seed container creates at boot. They are not real credentials and cannot be used to impersonate anyone outside this deployment. The acceptance checker uses the same cookie values.
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="shell">
+        <a href="/">Gallery</a>
+        <a href="/judge.html">Judge view</a>
+        <a href="/submit.html">Submit</a>
+        <a href="/status.html">Status</a>
+      </div>
+    </footer>    <script>
+      function getCookie(name) {
+        var parts = document.cookie ? document.cookie.split("; ") : [];
+        for (var i = 0; i < parts.length; i++) {
+          var kv = parts[i].split("=");
+          if (kv[0] === name) return kv.slice(1).join("=");
+        }
+        return null;
+      }
+      function setCookie(name, value) {
+        document.cookie = name + "=" + value + "; path=/; SameSite=Lax";
+      }
+      function clearCookie(name) {
+        document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+      }
+      var ROLE_LABELS = {
+        "seed-token-organizer": "Organizer",
+        "seed-token-judge-a": "Judge A",
+        "seed-token-judge-b": "Judge B",
+        "seed-token-participant": "Participant"
+      };
+      function renderCurrent() {
+        var token = getCookie("df_sid");
+        var el = document.getElementById("current");
+        if (!token) { el.classList.remove("show"); el.innerHTML = ""; return; }
+        var label = ROLE_LABELS[token] || "Unknown session";
+        el.innerHTML = "Signed in as <strong>" + label + "</strong><br><button class=\"signout\" id=\"signout\">Sign out</button>";
+        el.classList.add("show");
+        var btn = document.getElementById("signout");
+        if (btn) btn.addEventListener("click", function () {
+          clearCookie("df_sid");
+          renderCurrent();
+        });
+      }
+      var roles = document.querySelectorAll(".role");
+      for (var i = 0; i < roles.length; i++) {
+        roles[i].addEventListener("click", function () {
+          setCookie("df_sid", this.getAttribute("data-token"));
+          var params = new URLSearchParams(window.location.search);
+          var next = params.get("next") || "/judge.html";
+          window.location.href = next;
+        });
+      }
+      renderCurrent();
+    </script>
+  </body>
+</html>
