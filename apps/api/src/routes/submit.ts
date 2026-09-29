@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "../db.js";
 import { getActor } from "../auth/actor.js";
+import { randomHex } from "../lib/hash.js";
 
 export async function submitRoutes(app: FastifyInstance) {
   app.post("/api/v1/events/:eventId/projects", async (req, reply) => {
@@ -23,6 +24,23 @@ export async function submitRoutes(app: FastifyInstance) {
     }
 
     if (event.submissionsClose.getTime() <= Date.now()) {
+      // Append-only audit entry for a refused late submission.
+      await prisma.auditLog.create({
+        data: {
+          id: `aud_${randomHex(12)}`,
+          eventId: event.id,
+          actorId: actor.userId,
+          actorIp: req.ip ?? null,
+          action: "submission.refused.deadline",
+          targetType: "event",
+          targetId: event.id,
+          metadata: {
+            submissionsClose: event.submissionsClose.toISOString(),
+            attemptedAt: new Date().toISOString(),
+          },
+        },
+      });
+
       reply.code(403);
       return { error: "submissions_closed" };
     }

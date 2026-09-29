@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    command: ["sh", "-c", "npx prisma db push --schema=/app/prisma/schema.prisma --skip-generate --accept-data-loss && node dist/seed/seed.js"]
+    command: ["sh", "-c", "npx prisma db push --schema=/app/prisma/schema.prisma --skip-generate --accept-data-loss && psql \"$DATABASE_URL\" -f /app/prisma/audit-trigger.sql && node dist/seed/seed.js"]
     environment:
       DATABASE_URL: postgres://dogfood:dogfood@db:5432/dogfood
       NODE_ENV: production

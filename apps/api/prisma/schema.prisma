@@ -20,6 +20,7 @@ model User {
   teamMembers TeamMember[]
   scores      Score[]
   judgeScopes JudgeScope[]
+  auditLogs   AuditLog[]
 
   @@map("users")
 }
@@ -51,6 +52,7 @@ model Event {
   projects    Project[]
   scores      Score[]
   judgeScopes JudgeScope[]
+  auditLogs   AuditLog[]
 
   @@map("events")
 }
@@ -159,4 +161,25 @@ model Score {
   @@unique([judgeUserId, projectId])
   @@index([projectId])
   @@map("scores")
+}
+
+model AuditLog {
+  id         String   @id
+  eventId    String?  @map("event_id")
+  actorId    String?  @map("actor_id")
+  actorIp    String?  @map("actor_ip")
+  action     String
+  targetType String   @map("target_type")
+  targetId   String?  @map("target_id")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  actor User?  @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([eventId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([targetType, targetId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
 }

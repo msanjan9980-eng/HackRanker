@@ -11,7 +11,7 @@ RUN npm -w apps/api run build
 FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
-RUN apk add --no-cache wget openssl libc6-compat
+RUN apk add --no-cache wget openssl libc6-compat postgresql-client
 COPY --from=build /repo/node_modules /app/node_modules
 COPY --from=build /repo/apps/api/dist /app/dist
 COPY --from=build /repo/apps/api/prisma /app/prisma
