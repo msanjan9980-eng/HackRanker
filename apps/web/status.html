@@ -5,42 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Status &mdash; Dogfood 2026</title>
     <style>
-      :root{--bg:#0a0b14;--surface:rgba(22,24,44,0.75);--text:#f4f4ff;--text-2:#b0b6d0;--text-3:#7a8099;--line:rgba(150,160,220,0.10);--violet:#a78bfa;--cyan:#67e8f9;--radius:14px;--radius-sm:8px;--ease:cubic-bezier(0.16,1,0.3,1)}
-      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      :root{
+        --bg:#0b0b0c;--surface:#131315;--surface-2:#1a1a1d;
+        --border:#242428;--border-strong:#34343a;
+        --text:#ededef;--text-muted:#9a9aa0;--text-dim:#6a6a72;
+        --accent:#3b82f6;
+        --radius:6px;--radius-sm:4px;--transition:120ms ease;
+      }
+      *,*::before,*::after{box-sizing:border-box}
       html{-webkit-font-smoothing:antialiased;color-scheme:dark}
-      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;background-image:radial-gradient(900px 500px at 8% -8%,rgba(167,139,250,0.18),transparent 60%),radial-gradient(900px 600px at 92% 5%,rgba(103,232,249,0.12),transparent 55%),radial-gradient(rgba(167,139,250,0.10) 1px,transparent 1px);background-size:auto,auto,22px 22px;background-attachment:fixed}
-      ::selection{background:rgba(167,139,250,0.35);color:var(--text)}
+      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.55}
+      a{color:var(--accent);text-decoration:none}
+      a:hover{text-decoration:underline;text-underline-offset:2px}
+      ::selection{background:rgba(59,130,246,0.25)}
       ::-webkit-scrollbar{width:10px}
-      ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--violet),var(--cyan));border-radius:5px;border:2px solid var(--bg)}
-      .shell{max-width:52rem;margin:0 auto;padding:0 1.75rem}
-      header{padding:3.5rem 0 2rem;border-bottom:1px solid var(--line)}
-      .brand{display:inline-flex;align-items:center;gap:0.55rem;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-3);margin-bottom:1.75rem;font-weight:600}
-      .brand a{color:var(--text-3);text-decoration:none}
-      .brand a:hover{color:var(--violet)}
-      .brand .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 0 0 4px rgba(167,139,250,0.15),0 0 16px rgba(167,139,250,0.7);animation:pulse 2.4s ease-in-out infinite}
-      @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
-      h1{font-size:clamp(2rem,3.6vw + 1rem,3rem);font-weight:650;letter-spacing:-0.04em;line-height:1.05;margin:0;background:linear-gradient(120deg,#ffffff 0%,#c4b5fd 35%,#67e8f9 65%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-      .subtitle{color:var(--text-2);margin:1rem 0 0;font-size:1.02rem}
-      main{padding:2rem 0 3rem}
-      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin-bottom:1.5rem}
-      .panel{background:linear-gradient(180deg,rgba(30,32,58,0.68) 0%,rgba(18,20,36,0.9) 100%);border:1px solid var(--line);border-radius:var(--radius);padding:1.35rem;backdrop-filter:blur(8px)}
-      .panel .label{font-size:0.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;margin-bottom:0.5rem}
-      .panel .value{font-size:1.75rem;font-weight:650;letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
-      .panel .value.ok{background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-      .panel .value.err{color:#fca5a5}
-      .check{display:flex;align-items:center;gap:0.6rem;padding:0.75rem 0;font-size:0.92rem;border-bottom:1px solid var(--line)}
+      ::-webkit-scrollbar-track{background:var(--bg)}
+      ::-webkit-scrollbar-thumb{background:#2a2a2e;border-radius:5px;border:2px solid var(--bg)}
+      .shell{max-width:880px;margin:0 auto;padding:0 32px}
+      header{padding:48px 0 32px;border-bottom:1px solid var(--border)}
+      .brand{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:24px}
+      .brand a{color:var(--text-muted);text-decoration:none}
+      .brand a:hover{color:var(--text);text-decoration:underline;text-underline-offset:2px}
+      .brand .dot{display:none}
+      h1{font-size:28px;font-weight:600;letter-spacing:-0.02em;line-height:1.2;margin:0 0 10px;color:var(--text)}
+      .subtitle{color:var(--text-muted);margin:0;font-size:15px}
+      main{padding:32px 0 64px}
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+      .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+      .panel .label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;font-weight:500;margin-bottom:8px}
+      .panel .value{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+      .panel .value.ok{color:var(--text)}
+      .panel .value.err{color:#f87171}
+      .check{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:14px;border-bottom:1px solid var(--border)}
       .check:last-child{border-bottom:0}
       .dot-ok,.dot-err{width:8px;height:8px;border-radius:50%;flex:none}
-      .dot-ok{background:#8ef2c9;box-shadow:0 0 10px rgba(142,242,201,0.7)}
-      .dot-err{background:#fca5a5;box-shadow:0 0 10px rgba(252,165,165,0.7)}
-      .check .name{flex:1;color:var(--text-2)}
-      .check .res{font-weight:600;font-size:0.82rem}
-      .check .res.ok{color:#8ef2c9}
-      .check .res.err{color:#fca5a5}
-      footer{max-width:52rem;margin:0 auto;padding:1.5rem 1.75rem 2rem;color:var(--text-3);font-size:0.78rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center}
-      footer a{color:var(--text-2);text-decoration:none}
-      footer a:hover{color:var(--violet)}
-      code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167,139,250,0.10);border:1px solid rgba(167,139,250,0.22);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85em;color:#e9d5ff}
+      .dot-ok{background:#86efac}
+      .dot-err{background:#f87171}
+      .check .name{flex:1;color:var(--text-muted)}
+      .check .res{font-weight:500;font-size:13px}
+      .check .res.ok{color:var(--text)}
+      .check .res.err{color:#f87171}
+      footer{max-width:880px;margin:0 auto;padding:32px;color:var(--text-dim);font-size:12px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+      footer a{color:var(--text-muted);text-decoration:none}
+      footer a:hover{color:var(--text);text-decoration:underline;text-underline-offset:2px}
+      code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--surface-2);border:1px solid var(--border);padding:1px 6px;border-radius:var(--radius-sm);font-size:0.88em;color:var(--text-muted)}
     </style>
   </head>
   <body>
@@ -53,14 +61,14 @@
     </header>
     <main class="shell">
       <div class="grid">
-        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">—</div></div>
-        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">—</div></div>
-        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">—</div></div>
+        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">â€”</div></div>
+        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">â€”</div></div>
+        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">â€”</div></div>
       </div>
       <div class="panel">
-        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checking…</span></div>
-        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checking…</span></div>
-        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checking…</span></div>
+        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checkingâ€¦</span></div>
+        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checkingâ€¦</span></div>
+        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checkingâ€¦</span></div>
       </div>
     </main>
     <footer>
@@ -89,14 +97,14 @@
           set(1, h.ok, h.ok ? "200 OK" : "HTTP " + h.status);
         } catch (e) {
           set(1, false, "unreachable");
-          document.getElementById("k-latency").textContent = "—";
+          document.getElementById("k-latency").textContent = "â€”";
         }
         try {
           var g = await fetch("/api/v1/events/evt_01/gallery");
           var data = await g.json();
           document.getElementById("k-projects").textContent = String(data.count || 0);
           document.getElementById("k-projects").className = "value ok";
-          set(2, g.ok, g.ok ? "200 · " + (data.count || 0) + " items" : "HTTP " + g.status);
+          set(2, g.ok, g.ok ? "200 Â· " + (data.count || 0) + " items" : "HTTP " + g.status);
           var close = data.event && data.event.submissionsClose ? new Date(data.event.submissionsClose) : null;
           if (close && close < new Date()) {
             document.getElementById("k-judges").textContent = "30";
