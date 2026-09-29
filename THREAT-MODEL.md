@@ -41,40 +41,55 @@ Stopped.
 
 - `UNIQUE(judgeUserId, projectId)` in the database.
 - No bulk-score endpoint exists.
+- `POST /api/v1/events/:eventId/projects` carries a rate limit of
+  10 requests per minute, keyed on the `df_sid` cookie (falling back
+  to IP for anonymous callers). A single session cannot flood the
+  submit endpoint.
 
 Not stopped.
 
-- There is no per-round cap on total scores a judge can submit in a
-  time window. A judge assigned to 40 projects can score all 40 in a
-  minute.
-- There is no rate limiter. A script could create many scores on
-  different (judge, project) pairs.
+- The rate limit is per session, not per account. A user who rotates
+  their cookie resets the counter.
+- The limits are generous enough that a patient attacker submitting
+  ten scores per minute would still complete a large ballot-stuffing
+  run over hours.
+- There is no per-(judge, event) cumulative cap; the limiter governs
+  the rate, not the total.
 
-What a fix would look like. A sliding-window rate limiter on
-`POST /scores`, backed by a `rate_limit_buckets` table. This is
-straightforward and would be the next iteration.
+What a fix would look like. Track cumulative score submissions per
+judge per event and flag outliers in an organizer diagnostic. The
+sliding-window limiter is the first layer; anomaly detection on top
+of it is the second.
 
 ## 3. Submission scraping
 
 Attack. A script walks the gallery and downloads every project's
 metadata to republish it elsewhere.
 
-Stopped.
+Stopped (in part).
 
-- The gallery route is public by design. The fixtures are meant to be
-  read by anyone running the portal, so scraping the fixture data is
-  not a loss.
+- The gallery route is public by design. The fixtures are meant to
+  be read by anyone running the portal, so scraping the fixture data
+  is not a loss.
 - The `take: 40` clause caps the response size.
+- `GET /api/v1/events/:eventId/gallery` carries a rate limit of
+  60 requests per minute, keyed on the `df_sid` cookie if present,
+  otherwise on IP. A single IP cannot hammer the endpoint.
 
 Not stopped.
 
-- There is no rate limit on the gallery endpoint. A loop could hit it
-  thousands of times per minute.
+- The IP-keyed limiter is trivially bypassed by distributing the
+  scrape across many source IPs (residential proxies, cloud
+  regions). The response is still readable one request at a time.
+- The 40-project cap means the full fixture is harvested in one
+  request anyway, so the rate limit does not meaningfully slow a
+  determined scraper.
 - There is no pagination cap for larger datasets.
 
-What a fix would look like. A sliding-window bucket on the gallery
-route keyed by IP hash. Cheap; not shipped.
-
+What a fix would look like. Move the gallery behind a signed read
+token for events with a larger project set, or require a session
+cookie for non-fixture data. The rate limit is a speed bump, not a
+wall.
 ## 4. Judge collusion
 
 Attack. Two judges agree to give each other's projects the highest
