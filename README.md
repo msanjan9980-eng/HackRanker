@@ -55,15 +55,31 @@ T2 - Judging
     judge themselves and organizers/admins
 - CSV export of projects by organizer
 
+## T3 evidence shipped
+
+- Append-only `audit_logs` table. Postgres trigger `audit_log_no_mutate`
+  refuses `UPDATE` and `DELETE`. Verified: `UPDATE audit_logs ...`
+  raises `audit_logs is append-only (attempted UPDATE)`.
+- Cross-judge normalization at `apps/api/src/lib/normalize.ts`:
+  robust_z (MAD-based) with midrank fallback for zero-variance judges
+  and an insufficient-sample guard at `MIN_SAMPLE = 5`. Exposed at
+  `GET /api/v1/events/:eventId/scores/normalized` (organizer only).
+- Vitest suite (`apps/api/test/normalize.test.ts`) - 11 tests covering
+  raw weighted score, empty input, insufficient sample, midrank
+  fallback, robust_z exact values, determinism, and [0,100] rescale.
+- Rate limiting via `@fastify/rate-limit`:
+  `POST /projects` 10 req/min per session; `GET /gallery` 60 req/min
+  per IP. Registered with `global: false`, opted in per route.
+
 ## What does not work yet
 
 - Community voting (T3)
 - Comments (T3)
-- Rate limiting (T3)
-- Audit log table (T3)
-- Cross-judge normalization pass
+- Automated duplicate submission detection (T3)
 - Organizer progress dashboard
 - REST/webhook surface (T4)
+- Session revocation enforcement (available in schema, not enforced)
+- Email verification (offline constraint)
 
 These are noted honestly rather than claimed. The acceptance report is
 the receipt.
