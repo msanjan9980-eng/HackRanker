@@ -64,6 +64,27 @@ footer{max-width:76rem;margin:0 auto;padding:1.5rem 1.75rem 2rem;color:var(--tex
 footer a{color:var(--text-2)}
 footer a:hover{color:var(--violet)}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167,139,250,0.10);border:1px solid rgba(167,139,250,0.22);padding:0.12rem 0.42rem;border-radius:4px;font-size:0.85em;color:#e9d5ff}
+.tag:not(.track){color:#8b92a6;background:transparent;border-color:rgba(150,160,220,0.12);font-weight:400}
+.hero .stats{display:flex;gap:2.5rem;margin-top:2.25rem;flex-wrap:wrap}
+.hero .stat{display:flex;flex-direction:column;gap:0.35rem}
+.hero .stat .num{font-size:2.25rem;font-weight:650;letter-spacing:-0.03em;line-height:1;background:linear-gradient(120deg,#ffffff,var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hero .stat .label{font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.card{cursor:pointer}
+.track-section{grid-column:1/-1;display:flex;align-items:baseline;gap:0.75rem;margin-top:1.75rem;margin-bottom:0.15rem;padding-bottom:0.7rem;border-bottom:1px solid var(--line)}
+.track-section:first-child{margin-top:0}
+.track-section h2{font-size:0.82rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--violet)}
+.track-section .count{font-size:0.78rem;color:var(--text-3);margin-left:auto;font-variant-numeric:tabular-nums}
+.modal-bg{position:fixed;inset:0;background:rgba(4,5,12,0.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:100;display:none;align-items:center;justify-content:center;padding:1.5rem}
+.modal-bg.open{display:flex;animation:fade 180ms var(--ease)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{position:relative;max-width:36rem;width:100%;max-height:85vh;overflow-y:auto;background:linear-gradient(180deg,rgba(30,32,58,0.96),rgba(18,20,36,0.98));border:1px solid rgba(167,139,250,0.35);border-radius:18px;padding:2.25rem 2rem 2rem;box-shadow:0 30px 80px -20px rgba(0,0,0,0.9),0 0 0 1px rgba(167,139,250,0.15),0 0 60px -20px rgba(167,139,250,0.5);animation:pop 240ms var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal h3{font-size:1.55rem;font-weight:650;letter-spacing:-0.025em;margin-bottom:0.7rem;line-height:1.2;color:var(--text)}
+.modal .modal-summary{color:var(--text-2);line-height:1.7;margin-bottom:1.5rem}
+.modal .modal-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem}
+.modal .modal-link{display:inline-flex;align-items:center;gap:0.4rem;color:var(--cyan);font-weight:600;font-size:0.92rem}
+.modal .close{position:absolute;top:1rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid var(--line);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;line-height:1;transition:all 200ms var(--ease);padding:0;font-family:inherit}
+.modal .close:hover{background:rgba(167,139,250,0.15);color:var(--text);border-color:var(--accent-border)}
     </style>
   </head>
   <body>
@@ -137,7 +158,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167
           ? '<a class="repo" href="' + esc(p.repoUrl) + '" target="_blank" rel="noopener">Repository ' + arrowSvg + '</a>'
           : "";
         return (
-          '<article class="card" style="animation-delay:' + Math.min(idx * 18, 400) + 'ms">' +
+          '<article class="card" data-pid="' + esc(p.id) + '" style="animation-delay:' + Math.min(idx * 18, 400) + 'ms">' +
             '<h2>' + esc(p.title) + '</h2>' +
             '<p class="summary">' + esc(p.summary ?? "") + '</p>' +
             '<div class="row">' +
@@ -195,7 +216,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167
           });
           if (!res.ok) throw new Error("HTTP " + res.status);
           const data = await res.json();
-          ALL = Array.isArray(data.items) ? data.items : [];
+          ALL = Array.isArray(data.items) ? data.items : []; window.__ALL_PROJECTS__ = Object.fromEntries(ALL.map(function(p){return [p.id, p];}));
 
           document.getElementById("event-name").textContent = data.event?.name ?? EVENT_ID;
           document.getElementById("event-close").textContent = fmtDate(data.event?.submissionsClose);
@@ -216,6 +237,72 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167
       trackSelect.addEventListener("change", (e) => { state.track = e.target.value; applyFilter(); });
 
       load();
+    </script>
+    <div id="modal-bg" class="modal-bg" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal">
+        <button class="close" id="modal-close" aria-label="Close">&times;</button>
+        <h3 id="modal-title"></h3>
+        <p class="modal-summary" id="modal-summary"></p>
+        <div class="modal-tags" id="modal-tags"></div>
+        <a class="modal-link" id="modal-link" href="#" target="_blank" rel="noopener" style="display:none;">
+          View repository
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var bg = document.getElementById("modal-bg");
+        var closeBtn = document.getElementById("modal-close");
+        var mTitle = document.getElementById("modal-title");
+        var mSummary = document.getElementById("modal-summary");
+        var mTags = document.getElementById("modal-tags");
+        var mLink = document.getElementById("modal-link");
+        var gallery = document.getElementById("gallery");
+
+        var esc = function (s) {
+          return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        };
+        var fmtDate = function (iso) {
+          if (!iso) return "\u2014";
+          var d = new Date(iso);
+          return isNaN(d) ? "\u2014" : d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+        };
+
+        function openModal(p) {
+          mTitle.textContent = p.title || "";
+          mSummary.textContent = p.summary || "";
+          var tags = [];
+          if (p.track) tags.push("<span class='tag track'>" + esc(p.track.name) + "</span>");
+          if (p.team) tags.push("<span class='tag'>" + esc(p.team.name) + "</span>");
+          if (p.submittedAt) tags.push("<span class='tag'>" + fmtDate(p.submittedAt) + "</span>");
+          mTags.innerHTML = tags.join("");
+          if (p.repoUrl) { mLink.href = p.repoUrl; mLink.style.display = "inline-flex"; }
+          else { mLink.style.display = "none"; }
+          bg.classList.add("open");
+          bg.setAttribute("aria-hidden", "false");
+        }
+        function closeModal() {
+          bg.classList.remove("open");
+          bg.setAttribute("aria-hidden", "true");
+        }
+
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+        closeBtn.addEventListener("click", closeModal);
+        bg.addEventListener("click", function (e) { if (e.target === bg) closeModal(); });
+
+        gallery.addEventListener("click", function (e) {
+          if (e.target.closest("a")) return;
+          var card = e.target.closest(".card");
+          if (!card) return;
+          var pid = card.getAttribute("data-pid");
+          if (!pid) return;
+          var p = window.__ALL_PROJECTS__ && window.__ALL_PROJECTS__[pid];
+          if (p) openModal(p);
+        });
+      })();
     </script>
   </body>
 </html>
