@@ -6,7 +6,7 @@
     <title>Dogfood 2026 &mdash; Sample Hack 2026</title>
     <meta name="description" content="Self-hostable hackathon submission and judging platform. 40 projects, 30 judges, 126 scores loaded from fixtures.">
     <meta name="theme-color" content="#0a0b14">
-    <meta property="og:title" content="Sample Hack 2026 Ã¢â‚¬â€ Dogfood 2026">
+    <meta property="og:title" content="Sample Hack 2026 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Dogfood 2026">
     <meta property="og:description" content="Public project gallery with backend-enforced role isolation and cross-judge normalization.">
     <meta property="og:type" content="website">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%2367e8f9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%230a0b14'/%3E%3Ccircle cx='16' cy='16' r='7' fill='url(%23g)'/%3E%3C/svg%3E">
@@ -336,13 +336,23 @@ trackOrder.forEach(function (trackName) {
           else { mLink.style.display = "none"; }
           bg.classList.add("open");
           bg.setAttribute("aria-hidden", "false");
+          setTimeout(function () { closeBtn.focus(); }, 30);
+          setTimeout(function(){ closeBtn.focus(); }, 30);
         }
         function closeModal() {
           bg.classList.remove("open");
           bg.setAttribute("aria-hidden", "true");
         }
 
-        document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { closeModal(); return; }
+          if (e.key !== "Tab" || !bg.classList.contains("open")) return;
+          var focusable = bg.querySelectorAll('button, a[href], input, select, textarea');
+          if (focusable.length === 0) return;
+          var first = focusable[0], last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
         closeBtn.addEventListener("click", closeModal);
         bg.addEventListener("click", function (e) { if (e.target === bg) closeModal(); });
 
