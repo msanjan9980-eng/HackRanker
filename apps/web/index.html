@@ -187,9 +187,20 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(167
           ? "No projects match your filters."
           : "Showing " + filtered.length + " of " + ALL.length + " projects.";
 
-        galleryEl.innerHTML = filtered.length
-          ? filtered.map(cardHtml).join("")
-          : '<div class="empty">Nothing to show. Try clearing the search or track filter.</div>';
+        var grouped = {};
+filtered.forEach(function (p) {
+  var key = (p.track && p.track.name) ? p.track.name : "Unassigned";
+  if (!grouped[key]) grouped[key] = [];
+  grouped[key].push(p);
+});
+var trackOrder = Object.keys(grouped).sort();
+var html = "";
+var idx = 0;
+trackOrder.forEach(function (trackName) {
+  html += '<div class="track-section"><h2>' + esc(trackName) + '</h2><span class="count">' + grouped[trackName].length + ' project' + (grouped[trackName].length === 1 ? '' : 's') + '</span></div>';
+  html += grouped[trackName].map(function (p) { var s = cardHtml(p, idx); idx++; return s; }).join("");
+});
+galleryEl.innerHTML = html;
       }
 
       function populateTracks(items) {
