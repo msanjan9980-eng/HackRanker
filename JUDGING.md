@@ -127,19 +127,28 @@ sensitive to a single outlier. If a judge gives one project a 1 and
 five projects a 5, standard deviation inflates and every score
 compresses. MAD is resilient to a single outlier.
 
-Worked example from the fixture data, once normalization ships:
+Worked example from the fixture data. The implementation lives at
+`apps/api/src/lib/normalize.ts` and is exercised by
+`apps/api/test/normalize.test.ts`.
 
-    jdg_01 raw scores:    2, 2, 2, 2, 2, 2, 2
-    median_01 = 2, MAD_01 = 0
+`jdg_01` and `jdg_07` are the two constant-score judges in the
+fixture. They scored 1 and 3 projects respectively, both with zero
+variance across all three criteria. Because both fall below
+`MIN_SAMPLE = 5`, they are handled by the insufficient-sample guard
+before the MAD-zero guard is reached:
 
-Because MAD is 0, the fallback triggers. `jdg_01`'s projects are ranked
-by midrank percentile and assigned neutral positions. The bias
-evaporates.
+    jdg_01  count=1  median=40  MAD=0  method="raw"  reason="count 1 < MIN_SAMPLE 5"
+    jdg_07  count=3  median=80  MAD=0  method="raw"  reason="count 3 < MIN_SAMPLE 5"
 
-    jdg_07 raw scores:    4, 4, 4, 4
-    median_07 = 4, MAD_07 = 0
+Their raw weighted scores are reported with a diagnostic flag. No
+normalization is applied, which is the honest answer: a judge with
+one or three reviews has no distribution to normalize against.
 
-Same fallback. Both biased judges are neutralized.
+The midrank fallback is reserved for judges with at least five
+completed evaluations and zero variance. The current fixture contains
+no such judge, so this path is not reachable through the live data.
+The Vitest suite in `apps/api/test/normalize.test.ts` covers it with
+synthetic input ("normalize - midrank fallback").
 
 Tie-break chain when final scores are equal:
 
@@ -152,7 +161,6 @@ Tie-break chain when final scores are equal:
 ## What is not yet implemented
 
 - Assignment algorithm (design above)
-- Normalization pass (design above)
 - Organizer progress dashboard
 - Inter-rater agreement, ICC(2,k) or Krippendorff's alpha
 
