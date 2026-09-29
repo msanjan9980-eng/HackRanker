@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Status | Sample Hack 2026</title>
-    <meta name="description" content="Live status of the Sample Hack 2026 deployment: health endpoint, project count, deadline enforcement.">
+    <title>Status | HackRanker</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231c69d4'/%3E%3Crect x='9' y='9' width='2' height='14' fill='%23ffffff'/%3E%3Crect x='21' y='9' width='2' height='14' fill='%23ffffff'/%3E%3Crect x='9' y='15' width='14' height='2' fill='%23ffffff'/%3E%3C/svg%3E">
+    <meta name="description" content="Live status of the HackRanker deployment: health endpoint, project count, deadline enforcement.">
     <style>
       :root{
         --bmw-blue:#1c69d4;--bmw-blue-hover:#0653b6;
@@ -70,21 +71,21 @@
   <body>
     <header>
       <div class="shell">
-        <div class="brand"><span class="dot"></span><a href="/">dogfood 2026</a> &middot; status</div>
+        <div class="brand"><span class="dot"></span><a href="/">HackRanker</a> &middot; status</div>
         <h1>System status</h1>
         <p class="subtitle">Live checks against the public endpoints of this deployment.</p>
       </div>
     </header>
     <main class="shell">
       <div class="grid">
-        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â</div></div>
-        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â</div></div>
-        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â</div></div>
+        <div class="panel"><div class="label">Projects loaded</div><div class="value" id="k-projects">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â</div></div>
+        <div class="panel"><div class="label">Judges</div><div class="value" id="k-judges">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â</div></div>
+        <div class="panel"><div class="label">API latency</div><div class="value" id="k-latency">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â</div></div>
       </div>
       <div class="panel">
-        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checkingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</span></div>
-        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checkingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</span></div>
-        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checkingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</span></div>
+        <div class="check"><span id="d1" class="dot-ok"></span><span class="name">GET /api/healthz</span><span class="res ok" id="r1">checkingÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦</span></div>
+        <div class="check"><span id="d2" class="dot-ok"></span><span class="name">GET /api/v1/events/evt_01/gallery</span><span class="res ok" id="r2">checkingÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦</span></div>
+        <div class="check"><span id="d3" class="dot-ok"></span><span class="name">Fixture event submissions_close enforced</span><span class="res ok" id="r3">checkingÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦</span></div>
       </div>
     </main>
     <footer>
@@ -113,14 +114,14 @@
           set(1, h.ok, h.ok ? "200 OK" : "HTTP " + h.status);
         } catch (e) {
           set(1, false, "unreachable");
-          document.getElementById("k-latency").textContent = "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â";
+          document.getElementById("k-latency").textContent = "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â";
         }
         try {
           var g = await fetch("/api/v1/events/evt_01/gallery");
           var data = await g.json();
           document.getElementById("k-projects").textContent = String(data.count || 0);
           document.getElementById("k-projects").className = "value ok";
-          set(2, g.ok, g.ok ? "200 ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· " + (data.count || 0) + " items" : "HTTP " + g.status);
+          set(2, g.ok, g.ok ? "200 ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· " + (data.count || 0) + " items" : "HTTP " + g.status);
           var close = data.event && data.event.submissionsClose ? new Date(data.event.submissionsClose) : null;
           if (close && close < new Date()) {
             document.getElementById("k-judges").textContent = "30";
