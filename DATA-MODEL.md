@@ -2,7 +2,7 @@
 
 ## Entities
 
-Nine tables, one per concern.
+Ten tables, one per concern.
 
 ### User
 
@@ -180,3 +180,31 @@ From the actual fixtures file:
 
 This is small enough that no pagination or caching is needed. Queries
 return in single-digit milliseconds.
+
+### AuditLog
+
+Append-only record of state-changing actions. Writes are enforced
+at the database layer: a Postgres trigger (`audit_log_no_mutate`)
+refuses `UPDATE` and `DELETE` on the table with error code
+`restrict_violation`. The application can insert, never modify.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| id | String (PK) | `aud_<random>` |
+| eventId | String? (FK) | Nullable, `ON DELETE SET NULL` |
+| actorId | String? (FK) | Nullable, `ON DELETE SET NULL` |
+| actorIp | String? | Request IP at write time |
+| action | String | Dotted verb, e.g. `submission.refused.deadline` |
+| targetType | String | e.g. `event`, `project`, `session` |
+| targetId | String? | The affected row's id |
+| metadata | JSON | Arbitrary structured context |
+| createdAt | DateTime | `@default(now())` |
+
+Indexes: `(eventId, createdAt)`, `(actorId, createdAt)`,
+`(targetType, targetId)`, `(action, createdAt)`.
+
+First writer: `apps/api/src/routes/submit.ts` records a row when a
+submission is refused because the deadline has passed. Verified with
+`UPDATE audit_logs SET action='tampered'` returning
+`ERROR: audit_logs is append-only (attempted UPDATE)`.
+
